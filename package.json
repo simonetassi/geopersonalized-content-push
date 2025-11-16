@@ -12,6 +12,11 @@
     "lint:frontend": "eslint ./frontend",
     "lint:mobile": "eslint ./mobile-app",
     "lint:backend": "eslint ./backend",
+    "docker:dev:up": "docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d",
+    "docker:dev:down": "docker-compose -f docker-compose.yml -f docker-compose.dev.yml down",
+    "docker:dev:logs": "docker-compose -f docker-compose.yml -f docker-compose.dev.yml logs -f",
+    "docker:prod:up": "docker-compose up -d",
+    "docker:prod:down": "docker-compose down",
     "prepare": "husky"
   },
   "lint-staged": {
