@@ -3,6 +3,7 @@ import { Repository } from 'typeorm';
 import { Geofence } from './entities/geofence.entity';
 import { CreateGeofenceDTO } from './dtos/create-geofence.dto';
 import { InjectRepository } from '@nestjs/typeorm';
+import { UpdateGeofenceDTO } from './dtos';
 
 @Injectable()
 export class GeofenceService {
@@ -25,7 +26,7 @@ export class GeofenceService {
 
   async update(
     id: string,
-    updateGeofenceDto: Partial<CreateGeofenceDTO>,
+    updateGeofenceDto: UpdateGeofenceDTO,
   ): Promise<Geofence> {
     const result = await this.geofenceRepository.update(id, updateGeofenceDto);
 

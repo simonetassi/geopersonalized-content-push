@@ -7,52 +7,53 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
-  Put,
 } from '@nestjs/common';
 import { GeofenceService } from './geofence.service';
-import { CreateGeofenceDTO } from './dtos/create-geofence.dto';
-import { Geofence } from './entities/geofence.entity';
+import { CreateGeofenceDTO, GeofenceDTO, UpdateGeofenceDTO } from './dtos';
+import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
 
 @Controller('geofences')
 export class GeofenceController {
   public constructor(private readonly geofenceService: GeofenceService) {}
 
   @Post()
+  @ApiOperation({ operationId: 'create' })
+  @ApiOkResponse({ type: [GeofenceDTO] })
   public create(
     @Body() createGeofenceDto: CreateGeofenceDTO,
-  ): Promise<Geofence> {
+  ): Promise<GeofenceDTO> {
     return this.geofenceService.create(createGeofenceDto);
   }
 
   @Get()
-  public findAll(): Promise<Geofence[]> {
+  @ApiOperation({ operationId: 'list' })
+  @ApiOkResponse({ type: [GeofenceDTO] })
+  public findAll(): Promise<GeofenceDTO[]> {
     return this.geofenceService.findAll();
   }
 
   @Get(':id')
+  @ApiOperation({ operationId: 'retrieve' })
+  @ApiOkResponse({ type: GeofenceDTO })
   public findOne(
     @Param('id', ParseUUIDPipe) id: string,
-  ): Promise<Geofence | null> {
+  ): Promise<GeofenceDTO | null> {
     return this.geofenceService.findOne(id);
   }
 
-  @Put(':id')
+  @Patch(':id')
+  @ApiOperation({ operationId: 'update' })
+  @ApiOkResponse({ type: GeofenceDTO })
   async update(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() updateGeofenceDto: CreateGeofenceDTO,
-  ): Promise<Geofence> {
-    return this.geofenceService.update(id, updateGeofenceDto);
-  }
-
-  @Patch(':id')
-  async partialUpdate(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Body() updateGeofenceDto: Partial<CreateGeofenceDTO>,
-  ): Promise<Geofence> {
+    @Body() updateGeofenceDto: UpdateGeofenceDTO,
+  ): Promise<GeofenceDTO> {
     return this.geofenceService.update(id, updateGeofenceDto);
   }
 
   @Delete(':id')
+  @ApiOperation({ operationId: 'delete' })
+  @ApiOkResponse({ type: null })
   public delete(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     return this.geofenceService.delete(id);
   }
