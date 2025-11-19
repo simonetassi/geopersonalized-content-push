@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GeofenceModule } from './geofences/geofence.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ContentMetaModule } from './content-meta/content-meta.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       inject: [ConfigService],
     }),
     GeofenceModule,
+    ContentMetaModule,
   ],
   controllers: [AppController],
   providers: [AppService],
