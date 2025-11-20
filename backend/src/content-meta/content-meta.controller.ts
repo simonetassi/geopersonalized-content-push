@@ -8,7 +8,7 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { ApiOkResponse, ApiOperation, ApiQuery } from '@nestjs/swagger';
+import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
 import { ContentMetaService } from './content-meta.service';
 import {
   ContentMetaDTO,
@@ -39,12 +39,6 @@ export class ContentMetaController {
   @Get(':id')
   @ApiOperation({ operationId: 'retrieve' })
   @ApiOkResponse({ type: ContentMetaDTO })
-  @ApiQuery({
-    name: 'relations',
-    required: false,
-    description: 'Comma-separated list of relations to load (e.g., fence)',
-    example: 'fence',
-  })
   public findOne(
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<ContentMetaDTO | null> {
