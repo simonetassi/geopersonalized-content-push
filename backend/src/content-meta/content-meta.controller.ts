@@ -7,12 +7,14 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
 import { ContentMetaService } from './content-meta.service';
 import {
   ContentMetaDTO,
   CreateContentMetaDTO,
+  FindByCoordsDTO,
   UpdateContentMetaDTO,
 } from './dtos';
 
@@ -36,6 +38,15 @@ export class ContentMetaController {
     return this.contentMetaService.findAll();
   }
 
+  @Get('by-coords')
+  @ApiOperation({ operationId: 'by-coords' })
+  @ApiOkResponse({ type: [ContentMetaDTO] })
+  public findByCoords(
+    @Query() coords: FindByCoordsDTO,
+  ): Promise<ContentMetaDTO[]> {
+    return this.contentMetaService.findByCoords(coords.lat, coords.lon);
+  }
+
   @Get(':id')
   @ApiOperation({ operationId: 'retrieve' })
   @ApiOkResponse({ type: ContentMetaDTO })
@@ -44,6 +55,7 @@ export class ContentMetaController {
   ): Promise<ContentMetaDTO | null> {
     return this.contentMetaService.findOne(id);
   }
+
   @Patch(':id')
   @ApiOperation({ operationId: 'update' })
   @ApiOkResponse({ type: ContentMetaDTO })
