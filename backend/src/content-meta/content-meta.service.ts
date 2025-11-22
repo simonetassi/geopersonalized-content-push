@@ -45,6 +45,31 @@ export class ContentMetaService {
     });
   }
 
+  public async findByCoords(
+    latitude: number,
+    longitude: number,
+  ): Promise<ContentMeta[] | null> {
+    const foundFence = await this.geofenceRepository
+      .createQueryBuilder('fence')
+      .where(
+        'ST_Covers(fence.geometry, ST_SetSRID(ST_MakePoint(:longitude, :latitude), 4326))',
+        {
+          longitude,
+          latitude,
+        },
+      )
+      .getOne();
+
+    if (foundFence === null) {
+      throw new NotFoundException(`No fence found for given coordinates`);
+    }
+
+    return this.contentMetaRepository.find({
+      where: { fence: { id: foundFence.id } },
+      relations: ['fence'],
+    });
+  }
+
   async update(
     id: string,
     updateContentMetaDto: UpdateContentMetaDTO,
