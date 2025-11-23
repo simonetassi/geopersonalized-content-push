@@ -11,8 +11,7 @@ import {
 } from 'typeorm';
 import { GeofenceService } from '@/geofences/geofence.service';
 import { UsersService } from '@/users/users.service';
-import { FindEventsDTO } from './dto/find-events.dto';
-import { EventDTO } from './dto';
+import { EventDTO, FindEventsDTO } from './dto';
 
 @Injectable()
 export class EventsService {

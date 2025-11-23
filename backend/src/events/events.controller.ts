@@ -1,8 +1,7 @@
 import { Controller, Get, Post, Body, Query } from '@nestjs/common';
 import { EventsService } from './events.service';
-import { CreateEventDTO, EventDTO } from './dto';
+import { CreateEventDTO, EventDTO, FindEventsDTO } from './dto';
 import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
-import { FindEventsDTO } from './dto/find-events.dto';
 
 @Controller('events')
 export class EventsController {
