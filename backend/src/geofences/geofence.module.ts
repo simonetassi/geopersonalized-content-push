@@ -8,5 +8,6 @@ import { GeofenceController } from './geofence.controller';
   imports: [TypeOrmModule.forFeature([Geofence])],
   providers: [GeofenceService],
   controllers: [GeofenceController],
+  exports: [GeofenceService],
 })
 export class GeofenceModule {}
