@@ -1,10 +1,9 @@
 import { Geometry } from 'geojson';
-import { Column, Entity, Generated, PrimaryColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Geofence {
-  @PrimaryColumn('uuid')
-  @Generated('uuid')
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column()

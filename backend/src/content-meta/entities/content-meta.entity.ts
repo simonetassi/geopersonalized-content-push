@@ -2,16 +2,14 @@ import { Geofence } from '@/geofences/entities/geofence.entity';
 import {
   Column,
   Entity,
-  Generated,
   JoinColumn,
   ManyToOne,
-  PrimaryColumn,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 
 @Entity()
 export class ContentMeta {
-  @PrimaryColumn('uuid')
-  @Generated('uuid')
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @ManyToOne(() => Geofence)
