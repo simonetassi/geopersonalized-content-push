@@ -6,6 +6,7 @@ import { GeofenceModule } from './geofences/geofence.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ContentMetaModule } from './content-meta/content-meta.module';
 import { UsersModule } from './users/users.module';
+import { EventsModule } from './events/events.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { UsersModule } from './users/users.module';
     GeofenceModule,
     ContentMetaModule,
     UsersModule,
+    EventsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
