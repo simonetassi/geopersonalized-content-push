@@ -3,8 +3,8 @@ import { User } from '@/users/entities/user.entity';
 import { Point } from 'geojson';
 import {
   Column,
-  CreateDateColumn,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
@@ -37,6 +37,7 @@ export class Event {
   })
   location: Point;
 
-  @CreateDateColumn({ type: 'timestamp' })
+  @Index()
+  @Column({ type: 'timestamptz' })
   timestamp: Date;
 }
