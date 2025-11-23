@@ -18,12 +18,12 @@ export class FindEventsDTO {
   @IsEnum(EventType)
   type?: EventType;
 
-  @ApiPropertyOptional({ example: '2023-01-01T00:00:00Z' })
+  @ApiPropertyOptional()
   @IsOptional()
   @IsISO8601()
   from?: string;
 
-  @ApiPropertyOptional({ example: '2023-01-02T00:00:00Z' })
+  @ApiPropertyOptional()
   @IsOptional()
   @IsISO8601()
   to?: string;
