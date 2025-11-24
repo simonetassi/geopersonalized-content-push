@@ -3,12 +3,12 @@ import { IsEnum, IsISO8601, IsOptional, IsUUID } from 'class-validator';
 import { EventType } from '../common/event-type';
 
 export class FindEventsDTO {
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ format: 'uuid' })
   @IsOptional()
   @IsUUID()
   userId?: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ format: 'uuid' })
   @IsOptional()
   @IsUUID()
   fenceId?: string;

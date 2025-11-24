@@ -1,20 +1,24 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsUUID } from 'class-validator';
+import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
 
 export class CreateContentMetaDTO {
   @IsUUID()
-  @ApiProperty()
+  @IsNotEmpty()
+  @ApiProperty({ format: 'uuid' })
   fenceId: string;
 
   @IsString()
+  @IsNotEmpty()
   @ApiProperty()
   type: string;
 
   @IsString()
+  @IsNotEmpty()
   @ApiProperty()
   descriptor: string;
 
   @IsString()
+  @IsNotEmpty()
   @ApiProperty()
   repoUrl: string;
 }

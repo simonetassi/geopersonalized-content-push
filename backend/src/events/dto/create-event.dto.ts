@@ -1,31 +1,42 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { IsEnum, IsISO8601, IsUUID } from 'class-validator';
+import {
+  IsDefined,
+  IsEnum,
+  IsISO8601,
+  IsNotEmpty,
+  IsUUID,
+} from 'class-validator';
 import { EventType } from '../common/event-type';
 import { Point } from 'geojson';
 
 export class CreateEventDTO {
   @Expose()
+  @IsDefined()
   @IsEnum(EventType)
   @ApiProperty({ enum: EventType })
   type: EventType;
 
   @Expose()
   @IsUUID()
-  @ApiProperty()
+  @IsNotEmpty()
+  @ApiProperty({ format: 'uuid' })
   userId: string;
 
   @Expose()
   @IsUUID()
-  @ApiProperty()
+  @IsNotEmpty()
+  @ApiProperty({ format: 'uuid' })
   fenceId: string;
 
   @Expose()
+  @IsDefined()
   @ApiProperty()
   location: Point;
 
   @Expose()
   @IsISO8601()
+  @IsDefined()
   @ApiProperty()
   timestamp: Date;
 }
