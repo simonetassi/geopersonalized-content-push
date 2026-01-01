@@ -9,11 +9,12 @@ export default [
     files: ['src/**/*.ts'],
     languageOptions: {
       parserOptions: {
-        project: ['./tsconfig.app.json', './tsconfig.spec.json'],
+        project: ['./tsconfig.app.json', './tsconfig.spec.json', './tsconfig.json'],
         tsconfigRootDir: import.meta.dirname,
       },
     },
   },
+
 
   {
     files: ['**/*.html'],
