@@ -1,0 +1,6 @@
+dist/
+build/
+
+metadata.db
+storage/*
+!storage/.gitkeep
