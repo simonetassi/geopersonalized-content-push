@@ -3,7 +3,6 @@ services:
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
 
-
   pgadmin:
     image: dpage/pgadmin4:latest
     container_name: pgadmin
@@ -19,6 +18,22 @@ services:
       - pgadmin_data:/var/lib/pgadmin
     depends_on:
       - postgis
+    networks:
+      - db-network
+
+  content-repository:
+    build:
+      context: ./content-repository 
+      dockerfile: Dockerfile
+    container_name: content-repository
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    volumes:
+      - ./content-repository/storage:/app/storage
+      - ./content-repository/metadata.db:/app/metadata.db
+    environment:
+      - NODE_ENV=production
     networks:
       - db-network
 
