@@ -45,6 +45,20 @@ export class ContentMetaService {
     });
   }
 
+  public async getRepoUrl(id: string): Promise<string | null> {
+    const url = (
+      await this.contentMetaRepository.findOne({
+        where: { id },
+        select: { id: true, repoUrl: true },
+      })
+    ).repoUrl;
+
+    if (!url)
+      throw new NotFoundException(`ContentMeta with ID ${id} not found`);
+
+    return url;
+  }
+
   public async findByCoords(
     latitude: number,
     longitude: number,
