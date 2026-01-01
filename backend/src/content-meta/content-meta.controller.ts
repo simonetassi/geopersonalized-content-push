@@ -3,11 +3,13 @@ import {
   Controller,
   Delete,
   Get,
+  HttpRedirectResponse,
   Param,
   ParseUUIDPipe,
   Patch,
   Post,
   Query,
+  Redirect,
 } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
 import { ContentMetaService } from './content-meta.service';
@@ -56,10 +58,22 @@ export class ContentMetaController {
     return this.contentMetaService.findOne(id);
   }
 
+  @Get('content/:id')
+  @ApiOperation({ operationId: 'download' })
+  @ApiOkResponse({ type: null })
+  @Redirect()
+  public async getRepoUrl(
+    @Param('id', ParseUUIDPipe) id: string,
+  ): Promise<HttpRedirectResponse> {
+    const repoUrl = await this.contentMetaService.getRepoUrl(id);
+
+    return { url: repoUrl, statusCode: 302 };
+  }
+
   @Patch(':id')
   @ApiOperation({ operationId: 'update' })
   @ApiOkResponse({ type: ContentMetaDTO })
-  async update(
+  public async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateContentMetaDTO: UpdateContentMetaDTO,
   ): Promise<ContentMetaDTO> {
