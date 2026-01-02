@@ -1,0 +1,60 @@
+<div
+  class="absolute inset-0 z-[100] bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4 pointer-events-auto"
+>
+  <div
+    class="bg-slate-900 border border-slate-700 w-full max-w-md rounded-3xl shadow-2xl p-8 space-y-6 animate-in fade-in zoom-in duration-300"
+  >
+    <div class="space-y-1">
+      <h3 class="text-2xl font-extrabold text-white tracking-tight">Geofence Details</h3>
+    </div>
+    <div class="space-y-4">
+      <div>
+        <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Name</label>
+        <input
+          type="text"
+          [(ngModel)]="formData.name"
+          placeholder="es. Ingresso Nord"
+          class="w-full text-white placeholder-slate-500 bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+        />
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest"
+            >Category</label
+          >
+          <input
+            type="text"
+            [(ngModel)]="formData.category"
+            placeholder="es. Retail"
+            class="w-full text-white placeholder-slate-500 bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+          />
+        </div>
+        <div>
+          <label class="text-[10px] font-black text-slate-500 uppercase tracking-widest"
+            >Layer Color</label
+          >
+          <input
+            type="color"
+            [(ngModel)]="formData.color"
+            class="w-full h-[50px] bg-slate-800 border border-slate-700 rounded-xl p-1 cursor-pointer"
+          />
+        </div>
+      </div>
+    </div>
+    <div class="flex gap-3 pt-4">
+      <button
+        (click)="onCancel()"
+        class="flex-1 px-4 py-3 text-slate-400 cursor-pointer font-bold hover:text-white transition-colors"
+      >
+        Cancel
+      </button>
+      <button
+        [disabled]="!formData.name"
+        (click)="onSave()"
+        class="flex-[2] px-4 py-3 bg-indigo-600 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold rounded-2xl hover:bg-indigo-500 shadow-lg shadow-indigo-600/20 transition-all active:scale-[0.98]"
+      >
+        Save Geofence
+      </button>
+    </div>
+  </div>
+</div>
