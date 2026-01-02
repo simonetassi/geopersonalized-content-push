@@ -1,1 +1,13 @@
-<div id="map"></div>
+<div class="relative h-screen w-screen overflow-hidden">
+  <div id="map" class="absolute inset-0 z-0"></div>
+  <div class="absolute inset-y-0 left-0 z-10 pointer-events-none">
+    <app-geofence-panel
+      [geofences]="filteredFences"
+      [selectedId]="activeFenceId"
+      (selected)="handleSelect($event)"
+      (searched)="handleSearch($event)"
+      (created)="openCreateModal()"
+    >
+    </app-geofence-panel>
+  </div>
+</div>
