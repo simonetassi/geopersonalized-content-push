@@ -1,13 +1,37 @@
-<div class="relative h-screen w-screen overflow-hidden">
+<div class="relative h-screen w-screen overflow-hidden bg-slate-950">
   <div id="map" class="absolute inset-0 z-0"></div>
   <div class="absolute inset-y-0 left-0 z-10 pointer-events-none">
     <app-geofence-panel
       [geofences]="filteredFences"
       [selectedId]="activeFenceId"
+      [isCollapsed]="isCreating && !isModalOpen"
       (selected)="handleSelect($event)"
       (searched)="handleSearch($event)"
-      (created)="openCreateModal()"
+      (created)="startDrawing()"
     >
     </app-geofence-panel>
   </div>
+  @if (isCreating && !isModalOpen) {
+    <div
+      class="absolute top-8 left-1/2 -translate-x-1/2 z-20 bg-slate-900/90 backdrop-blur-md px-6 py-3 rounded-2xl border border-indigo-500 shadow-2xl flex items-center gap-4 pointer-events-auto"
+    >
+      <div class="flex flex-col">
+        <span class="text-white font-medium italic animate-pulse"
+          >Click on the map to draw a perimeter...</span
+        >
+      </div>
+      <button
+        (click)="cancelCreation()"
+        class="ml-4 bg-red-500/20 text-red-400 px-3 py-1.5 rounded-xl border border-red-500/50 hover:bg-red-500 hover:text-white transition-all text-xs font-bold"
+      >
+        Cancel
+      </button>
+    </div>
+  }
+  @if (isModalOpen) {
+    <app-create-modal
+      (saved)="handleModalSave($event)"
+      (canceled)="cancelCreation()"
+    ></app-create-modal>
+  }
 </div>
