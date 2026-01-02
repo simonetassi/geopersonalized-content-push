@@ -22,6 +22,7 @@ export class GeofencePanelComponent {
   @Output()
   public searched = new EventEmitter<string>();
 
+  @Input()
   public isCollapsed: boolean = false;
 
   public selectFence(fence: Geofence): void {

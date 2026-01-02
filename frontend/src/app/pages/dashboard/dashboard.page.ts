@@ -1,8 +1,13 @@
 import { AfterViewInit, Component, OnDestroy, inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import * as L from 'leaflet';
+import '@geoman-io/leaflet-geoman-free';
 import { GeofencePanelComponent } from './components/geofences-panel/geofences-panel.component';
 import { Geofence } from '@/common/interfaces';
+import {
+  CreateModalComponent,
+  GeofenceFormData,
+} from './components/create-modal/create-modal.component';
 
 interface ExtendedLayerOptions extends L.LayerOptions {
   id?: string;
@@ -11,7 +16,7 @@ interface ExtendedLayerOptions extends L.LayerOptions {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [GeofencePanelComponent],
+  imports: [GeofencePanelComponent, CreateModalComponent],
   templateUrl: './dashboard.page.html',
   styleUrl: './dashboard.page.scss',
 })
@@ -79,6 +84,10 @@ export class DashboardPage implements AfterViewInit, OnDestroy {
   private map?: L.Map;
   private fencesGroup = L.featureGroup();
 
+  public isCreating: boolean = false;
+  public isModalOpen: boolean = false;
+  private tempLayer: L.Layer | undefined;
+
   public ngAfterViewInit(): void {
     if (isPlatformBrowser(this.platformId)) {
       this.initMap();
@@ -103,6 +112,15 @@ export class DashboardPage implements AfterViewInit, OnDestroy {
 
     this.fencesGroup.addTo(this.map);
     this.displayFences();
+
+    if (this.map) {
+      this.map.pm.setGlobalOptions({ snappable: true });
+
+      this.map.on('pm:create', (e) => {
+        this.tempLayer = e.layer;
+        this.openMetadataStep();
+      });
+    }
   }
 
   private displayFences(): void {
@@ -135,6 +153,59 @@ export class DashboardPage implements AfterViewInit, OnDestroy {
     if (this.fences.length > 0) {
       this.map.fitBounds(this.fencesGroup.getBounds(), { padding: [50, 50] });
     }
+  }
+
+  public startDrawing(): void {
+    if (!this.map) return;
+    this.isCreating = true;
+
+    this.map.pm.enableDraw('Polygon', {
+      snappable: true,
+      cursorMarker: true,
+    });
+  }
+
+  private openMetadataStep(): void {
+    this.map?.pm.disableDraw();
+    this.isModalOpen = true;
+  }
+
+  public handleModalSave(data: GeofenceFormData): void {
+    if (!this.tempLayer) return;
+
+    const geojson = (this.tempLayer as L.Polygon).toGeoJSON();
+
+    const newFence = {
+      name: data.name,
+      geometry: geojson.geometry,
+      metadata: {
+        color: data.color,
+        category: data.category,
+        isActive: true,
+        privacyLevel: 1,
+      },
+    };
+
+    console.log(newFence);
+    this.handleSearch('');
+    this.displayFences();
+    this.closeCreation();
+  }
+
+  public cancelCreation(): void {
+    this.isCreating = false;
+    this.isModalOpen = false;
+    if (this.tempLayer && this.map) {
+      this.map.removeLayer(this.tempLayer);
+    }
+    this.map?.pm.disableDraw();
+  }
+
+  private closeCreation(): void {
+    this.isCreating = false;
+    this.isModalOpen = false;
+    this.tempLayer = undefined;
+    this.map?.pm.disableDraw();
   }
 
   public handleSelect(fence: Geofence): void {
@@ -172,9 +243,5 @@ export class DashboardPage implements AfterViewInit, OnDestroy {
           fence.metadata.category.toLowerCase().includes(query),
       );
     }
-  }
-
-  public openCreateModal(): void {
-    console.log('Open modal logic here');
   }
 }
