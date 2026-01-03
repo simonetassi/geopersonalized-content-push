@@ -8,6 +8,7 @@ import {
   CreateModalComponent,
   GeofenceFormData,
 } from './components/create-modal/create-modal.component';
+import { DetailPanelComponent } from './components/detail-panel/detail-panel.component';
 
 interface ExtendedLayerOptions extends L.LayerOptions {
   id?: string;
@@ -16,14 +17,12 @@ interface ExtendedLayerOptions extends L.LayerOptions {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [GeofencePanelComponent, CreateModalComponent],
+  imports: [GeofencePanelComponent, CreateModalComponent, DetailPanelComponent],
   templateUrl: './dashboard.page.html',
   styleUrl: './dashboard.page.scss',
 })
 export class DashboardPage implements AfterViewInit, OnDestroy {
   private platformId = inject(PLATFORM_ID);
-
-  public activeFenceId: string | undefined;
 
   public fences: Geofence[] = [
     {
@@ -86,7 +85,11 @@ export class DashboardPage implements AfterViewInit, OnDestroy {
 
   public isCreating: boolean = false;
   public isModalOpen: boolean = false;
-  private tempLayer: L.Layer | undefined;
+  private tempLayer?: L.Layer;
+
+  public selectedFence?: Geofence;
+  public isMapEditing = false;
+  private currentEditingLayer?: L.Layer;
 
   public ngAfterViewInit(): void {
     if (isPlatformBrowser(this.platformId)) {
@@ -143,7 +146,7 @@ export class DashboardPage implements AfterViewInit, OnDestroy {
       geojsonLayer.bindTooltip(fence.name);
 
       geojsonLayer.on('click', () => {
-        this.activeFenceId = fence.id;
+        this.selectedFence = fence;
         this.map?.fitBounds(geojsonLayer.getBounds());
       });
 
@@ -209,16 +212,15 @@ export class DashboardPage implements AfterViewInit, OnDestroy {
   }
 
   public handleSelect(fence: Geofence): void {
-    this.activeFenceId = fence.id;
+    if (this.isMapEditing) {
+      this.stopMapEditing();
+    }
+
+    this.selectedFence = fence;
 
     if (!this.map) return;
 
-    const layers = this.fencesGroup.getLayers();
-
-    const targetLayer = layers.find((l) => {
-      const options = l.options as ExtendedLayerOptions;
-      return options.id === fence.id;
-    });
+    const targetLayer = this.findLayerById(fence.id);
 
     if (targetLayer && 'getBounds' in targetLayer) {
       const feature = targetLayer as L.FeatureGroup;
@@ -242,6 +244,72 @@ export class DashboardPage implements AfterViewInit, OnDestroy {
           fence.name.toLowerCase().includes(query) ||
           fence.metadata.category.toLowerCase().includes(query),
       );
+    }
+  }
+
+  private findLayerById(id: string): L.Layer | undefined {
+    return this.fencesGroup.getLayers().find((l) => {
+      const options = l.options as ExtendedLayerOptions;
+      return options.id === id;
+    });
+  }
+
+  public onMapEditRequest(enable: boolean): void {
+    if (!this.selectedFence || !this.map) return;
+
+    const layer = this.findLayerById(this.selectedFence.id);
+    if (!layer) return;
+
+    if (enable) {
+      this.isMapEditing = true;
+      this.currentEditingLayer = layer;
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      layer.pm.enable({ allowSelfIntersection: false, snappable: true });
+    } else {
+      this.stopMapEditing();
+    }
+  }
+
+  private stopMapEditing(): void {
+    if (this.currentEditingLayer && 'pm' in this.currentEditingLayer) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      this.currentEditingLayer.pm.disable();
+      this.currentEditingLayer = undefined;
+    }
+    this.isMapEditing = false;
+  }
+
+  public handleSaveEdit(updatedFence: Geofence): void {
+    if (!this.map) return;
+
+    const layer = this.findLayerById(updatedFence.id);
+    if (layer && 'toGeoJSON' in layer) {
+      const geojson = (layer as L.Polygon).toGeoJSON();
+      updatedFence.geometry = geojson.geometry;
+    }
+
+    const index = this.fences.findIndex((f) => f.id === updatedFence.id);
+    if (index !== -1) {
+      this.fences[index] = updatedFence;
+
+      // this.geofenceService.update(updatedFence).subscribe(...)
+
+      console.log(updatedFence);
+    }
+
+    this.stopMapEditing();
+    this.selectedFence = undefined;
+    this.displayFences();
+    this.handleSearch('');
+  }
+
+  public handleDelete(id: string): void {
+    if (confirm('Sei sicuro di voler eliminare questo geofence?')) {
+      this.fences = this.fences.filter((f) => f.id !== id);
+      this.selectedFence = undefined;
+      this.displayFences();
+      this.handleSearch('');
+      // this.geofenceService.delete(id).subscribe(...)
     }
   }
 }
