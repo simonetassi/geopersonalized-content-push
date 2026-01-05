@@ -1,24 +1,24 @@
 import { inject, Injectable } from '@angular/core';
-import { BehaviorSubject, map, Observable, tap } from 'rxjs';
+import { BehaviorSubject, combineLatest, map, Observable, tap } from 'rxjs';
 import { Geofence } from '../interfaces';
 import { environment } from '@/environments/environment';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({ providedIn: 'root' })
-export class GeofenceService {
+export class GeofencesService {
   private http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/geofences`;
 
   private fences$ = new BehaviorSubject<Geofence[]>([]);
   private searchTerm$ = new BehaviorSubject<string>('');
 
-  public filteredFences$ = this.fences$.pipe(
-    map((fences) => {
-      const term = this.searchTerm$.value.toLowerCase().trim();
-      if (!term) return fences;
+  public filteredFences$ = combineLatest([this.fences$, this.searchTerm$]).pipe(
+    map(([fences, term]) => {
+      const query = term.toLowerCase().trim();
+      if (!query) return fences;
       return fences.filter(
         (f) =>
-          f.name.toLowerCase().includes(term) || f.metadata.category.toLowerCase().includes(term),
+          f.name.toLowerCase().includes(query) || f.metadata.category.toLowerCase().includes(query),
       );
     }),
   );
