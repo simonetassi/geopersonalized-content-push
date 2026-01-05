@@ -1,0 +1,84 @@
+<aside
+  [class.translate-x-[-100%]]="isCollapsed"
+  class="relative flex flex-col w-80 h-[calc(100vh-2rem)] m-4 bg-slate-900/80 backdrop-blur-xl border border-slate-700/50 rounded-3xl shadow-2xl transition-transform duration-300 ease-in-out pointer-events-auto"
+>
+  <button
+    (click)="toggleCollapse()"
+    class="absolute -right-12 top-6 w-10 h-10 bg-slate-900 border border-slate-700 rounded-xl flex items-center justify-center text-white shadow-xl hover:bg-slate-800 transition-colors"
+  >
+    @if (isCollapsed) {
+      📂
+    } @else {
+      ⬅️
+    }
+  </button>
+  <div class="p-6 pb-4 space-y-4" [class.opacity-0]="isCollapsed">
+    <div class="flex items-center justify-between">
+      <h2 class="text-xl font-bold text-white tracking-tight">Geofences</h2>
+      <span
+        class="px-2 py-1 text-[10px] font-black uppercase bg-slate-700 text-slate-300 rounded-md border border-slate-600"
+      >
+        {{ geofences.length }} totali
+      </span>
+    </div>
+    <div class="relative">
+      <input
+        type="text"
+        placeholder="Search area..."
+        (input)="handleInput($event)"
+        class="w-full bg-slate-800/50 border border-slate-700 rounded-xl py-2 pl-4 pr-4 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+      />
+    </div>
+  </div>
+  <div class="flex-grow overflow-y-auto px-4 space-y-2" [class.hidden]="isCollapsed">
+    @for (fence of geofences; track fence.id) {
+      <div
+        (click)="selectFence(fence)"
+        [style.border-left-color]="fence.metadata['color']"
+        [class]="{ 'bg-white/10': selectedId === fence.id }"
+        [class.border-l-4]="true"
+        class="group relative p-4 rounded-xl bg-slate-800/30 border border-slate-700/50 hover:bg-slate-800/60 transition-all cursor-pointer"
+      >
+        @if (fence.metadata['isActive']) {
+          <div class="absolute top-2 right-2 flex h-2 w-2">
+            <span
+              class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"
+            ></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+          </div>
+        }
+        <div class="flex flex-col gap-1">
+          <span class="text-sm font-bold text-slate-100 uppercase tracking-tight">
+            {{ fence.name }}
+          </span>
+
+          <div class="flex items-center gap-2">
+            <span
+              class="text-[10px] px-2 py-0.5 rounded-full bg-slate-700 text-slate-400 border border-slate-600"
+            >
+              {{ fence.metadata['category'] }}
+            </span>
+            @if (fence.metadata['privacyLevel'] > 0) {
+              <span class="text-[10px] text-indigo-400">
+                🛡️ Level {{ fence.metadata['privacyLevel'] }}
+              </span>
+            }
+          </div>
+        </div>
+      </div>
+    } @empty {
+      <div class="flex flex-col items-center justify-center h-40 text-slate-500">
+        <span class="text-3xl mb-2">🗺️</span>
+        <p class="text-xs">No geofence found</p>
+      </div>
+    }
+  </div>
+  <div class="p-6 mt-auto" [class.hidden]="isCollapsed">
+    <button
+      (click)="createNew()"
+      class="w-full cursor-pointer bg-white hover:bg-slate-200 text-slate-900 font-bold py-3 rounded-2xl shadow-lg transition-all active:scale-[0.98]"
+    >
+      + Create Geofence
+    </button>
+  </div>
+</aside>
