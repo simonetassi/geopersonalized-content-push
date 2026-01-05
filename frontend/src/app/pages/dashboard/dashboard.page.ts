@@ -7,10 +7,10 @@ import {
 } from './components/create-modal/create-modal.component';
 import { DetailPanelComponent } from './components/detail-panel/detail-panel.component';
 import { MapComponent } from './components/map/map.component';
-import { GeofenceService } from '@/common/services/geofences.service';
 import { AsyncPipe } from '@angular/common';
 import * as L from 'leaflet';
 import '@geoman-io/leaflet-geoman-free';
+import { GeofencesService } from '@/common/services/geofences.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -34,7 +34,7 @@ export class DashboardPage {
   public isMapEditing = false;
   private tempLayer?: L.Layer;
 
-  public geofenceService = inject(GeofenceService);
+  public geofenceService = inject(GeofencesService);
 
   public handleSelect(fence: Geofence): void {
     this.selectedFence = fence;
@@ -64,10 +64,13 @@ export class DashboardPage {
 
     this.geofenceService.addFence(newFence).subscribe({
       next: (created) => {
-        console.log('Creato con successo:', created);
+        console.log('Geofence created correctly:', created);
+
+        if (this.tempLayer) this.tempLayer.remove();
+
         this.closeCreation();
       },
-      error: (err) => alert('Errore durante la creazione: ' + (err as Error).message),
+      error: (err) => alert('Error during creation: ' + (err as Error).message),
     });
   }
 
@@ -80,11 +83,11 @@ export class DashboardPage {
 
     this.geofenceService.updateFence(updated).subscribe({
       next: (saved) => {
-        console.log('Aggiornato:', saved);
+        console.log('Updated:', saved);
         this.selectedFence = undefined;
         this.isMapEditing = false;
       },
-      error: (err) => alert("Errore durante l'aggiornamento: " + (err as Error).message),
+      error: (err) => alert('Error during update: ' + (err as Error).message),
     });
   }
 
@@ -99,7 +102,7 @@ export class DashboardPage {
           this.selectedFence = undefined;
         },
         error: (err) => {
-          alert("Errore durante l'eliminazione: " + (err as Error).message);
+          alert('Errore during deletion: ' + (err as Error).message);
         },
       });
     }
