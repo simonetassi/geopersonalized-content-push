@@ -12,7 +12,7 @@ export class ContentMeta {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => Geofence)
+  @ManyToOne(() => Geofence, (geofence) => geofence.id, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'fenceId' })
   fence: Geofence;
 
