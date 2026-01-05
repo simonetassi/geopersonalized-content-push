@@ -54,26 +54,54 @@ export class DashboardPage {
   }
 
   public handleModalSave(data: GeofenceFormData): void {
+    const { name, ...metadata } = data;
     const geojson = (this.tempLayer as L.Polygon).toGeoJSON();
     const newFence = {
-      name: data.name,
+      name: name,
       geometry: geojson.geometry,
-      metadata: { ...data, isActive: true, privacyLevel: 1 },
+      metadata: { ...metadata, isActive: true, privacyLevel: 1 },
     };
-    this.geofenceService.addFence(newFence);
-    this.closeCreation();
+
+    this.geofenceService.addFence(newFence).subscribe({
+      next: (created) => {
+        console.log('Creato con successo:', created);
+        this.closeCreation();
+      },
+      error: (err) => alert('Errore durante la creazione: ' + (err as Error).message),
+    });
   }
 
   public handleSaveEdit(updated: Geofence): void {
-    this.geofenceService.updateFence(updated);
-    this.isMapEditing = false;
-    this.selectedFence = undefined;
+    const currentGeometry = this.mapComponent.getLayerGeometry(updated.id);
+
+    if (currentGeometry) {
+      updated.geometry = currentGeometry;
+    }
+
+    this.geofenceService.updateFence(updated).subscribe({
+      next: (saved) => {
+        console.log('Aggiornato:', saved);
+        this.selectedFence = undefined;
+        this.isMapEditing = false;
+      },
+      error: (err) => alert("Errore durante l'aggiornamento: " + (err as Error).message),
+    });
   }
 
   public handleDelete(id: string): void {
-    if (confirm('Delete?')) {
-      this.geofenceService.deleteFence(id);
-      this.selectedFence = undefined;
+    if (
+      confirm(
+        'Warning: by deleting this Geofence you will also delete all metadata of associated content. Confirm?',
+      )
+    ) {
+      this.geofenceService.deleteFence(id).subscribe({
+        next: () => {
+          this.selectedFence = undefined;
+        },
+        error: (err) => {
+          alert("Errore durante l'eliminazione: " + (err as Error).message);
+        },
+      });
     }
   }
 

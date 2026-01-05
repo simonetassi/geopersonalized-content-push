@@ -1,63 +1,15 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, map } from 'rxjs';
+import { inject, Injectable } from '@angular/core';
+import { BehaviorSubject, map, Observable, tap } from 'rxjs';
 import { Geofence } from '../interfaces';
+import { environment } from '@/environments/environment';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({ providedIn: 'root' })
 export class GeofenceService {
-  private fences$ = new BehaviorSubject<Geofence[]>([
-    {
-      id: '1',
-      name: 'Centro Commerciale "Il Centro"',
-      geometry: {
-        type: 'Polygon',
-        coordinates: [
-          [
-            [9.06, 45.564],
-            [9.065, 45.564],
-            [9.065, 45.56],
-            [9.06, 45.56],
-            [9.06, 45.564],
-          ],
-        ],
-      },
-      metadata: { color: '#3b82f6', category: 'Retail', privacyLevel: 1, isActive: true },
-    },
-    {
-      id: '2',
-      name: 'Parco Sempione',
-      geometry: {
-        type: 'Polygon',
-        coordinates: [
-          [
-            [9.173, 45.475],
-            [9.178, 45.475],
-            [9.178, 45.47],
-            [9.173, 45.47],
-            [9.173, 45.475],
-          ],
-        ],
-      },
-      metadata: { color: '#10b981', category: 'Park', privacyLevel: 0, isActive: true },
-    },
-    {
-      id: '3',
-      name: 'Area Riservata Linate',
-      geometry: {
-        type: 'Polygon',
-        coordinates: [
-          [
-            [9.27, 45.465],
-            [9.285, 45.465],
-            [9.285, 45.455],
-            [9.27, 45.455],
-            [9.27, 45.465],
-          ],
-        ],
-      },
-      metadata: { color: '#ef4444', category: 'High Security', privacyLevel: 3, isActive: false },
-    },
-  ]);
+  private http = inject(HttpClient);
+  private readonly baseUrl = `${environment.apiUrl}/geofences`;
 
+  private fences$ = new BehaviorSubject<Geofence[]>([]);
   private searchTerm$ = new BehaviorSubject<string>('');
 
   public filteredFences$ = this.fences$.pipe(
@@ -71,24 +23,53 @@ export class GeofenceService {
     }),
   );
 
+  public constructor() {
+    this.load();
+  }
+
+  public load(): void {
+    this.http.get<Geofence[]>(this.baseUrl).subscribe((data) => {
+      this.fences$.next(data);
+      console.log(data);
+    });
+  }
+
   public setSearchTerm(term: string): void {
     this.searchTerm$.next(term);
   }
 
-  public addFence(fence: Partial<Geofence>): void {
-    console.log(fence);
+  public addFence(newFence: Partial<Geofence>): Observable<Geofence> {
+    return this.http.post<Geofence>(this.baseUrl, newFence).pipe(
+      tap((created) => {
+        const current = this.fences$.value;
+        this.fences$.next([...current, created]);
+      }),
+    );
   }
 
-  public updateFence(updated: Geofence): void {
-    const current = this.fences$.value;
-    const index = current.findIndex((f) => f.id === updated.id);
-    if (index !== -1) {
-      current[index] = updated;
-      this.fences$.next([...current]);
-    }
+  public updateFence(updated: Geofence): Observable<Geofence> {
+    const { id, ...payload } = updated;
+
+    console.log(payload);
+
+    return this.http.patch<Geofence>(`${this.baseUrl}/${id}`, payload).pipe(
+      tap((saved) => {
+        const current = this.fences$.value;
+        const index = current.findIndex((f) => f.id === saved.id);
+        if (index !== -1) {
+          current[index] = saved;
+          this.fences$.next([...current]);
+        }
+      }),
+    );
   }
 
-  public deleteFence(id: string): void {
-    this.fences$.next(this.fences$.value.filter((f) => f.id !== id));
+  public deleteFence(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`).pipe(
+      tap(() => {
+        const current = this.fences$.value;
+        this.fences$.next(current.filter((f) => f.id !== id));
+      }),
+    );
   }
 }

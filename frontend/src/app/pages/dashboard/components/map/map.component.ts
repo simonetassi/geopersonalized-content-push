@@ -13,6 +13,7 @@ import {
 } from '@angular/core';
 import * as L from 'leaflet';
 import '@geoman-io/leaflet-geoman-free';
+import { FeatureCollection, Geometry } from 'geojson';
 
 interface ExtendedLayerOptions extends L.LayerOptions {
   id?: string;
@@ -45,7 +46,7 @@ export class MapComponent implements AfterViewInit, OnChanges {
   }
 
   public ngOnChanges(changes: SimpleChanges): void {
-    if (changes['fences'] && this.map) this.displayFences();
+    if (changes['geofences'] && this.map) this.displayFences();
     if (changes['isDrawing'] && this.map) this.toggleDrawing();
     if ((changes['editMode'] || changes['selectedFenceId']) && this.map) this.toggleEditing();
   }
@@ -112,5 +113,19 @@ export class MapComponent implements AfterViewInit, OnChanges {
         });
       }
     }
+  }
+
+  public getLayerGeometry(id: string): Geometry | null {
+    const layer = this.fencesGroup
+      .getLayers()
+      .find((l) => (l.options as ExtendedLayerOptions).id === id);
+
+    if (layer && 'toGeoJSON' in layer) {
+      const geojson = (layer as L.FeatureGroup).toGeoJSON();
+      if (geojson.type === 'FeatureCollection')
+        return (geojson as FeatureCollection).features[0].geometry;
+      else if (geojson.type === 'Feature') return geojson.geometry;
+    }
+    return null;
   }
 }
