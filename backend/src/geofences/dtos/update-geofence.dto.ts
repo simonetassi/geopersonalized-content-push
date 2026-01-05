@@ -1,4 +1,20 @@
-import { PartialType } from '@nestjs/swagger';
-import { CreateGeofenceDTO } from './create-geofence.dto';
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { IsOptional, IsString, IsObject } from 'class-validator';
+import { Geometry } from 'geojson';
 
-export class UpdateGeofenceDTO extends PartialType(CreateGeofenceDTO) {}
+export class UpdateGeofenceDTO {
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  name?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsObject()
+  geometry?: Geometry;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsObject()
+  metadata?: Record<string, any>;
+}
