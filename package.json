@@ -41,7 +41,6 @@
     ]
   },
   "workspaces": [
-    "frontend",
     "mobile-app",
     "backend"
   ],

@@ -28,8 +28,8 @@
               }
             ],
             "styles": [
-              "../node_modules/leaflet/dist/leaflet.css",
-              "../node_modules/@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css",
+              "./node_modules/leaflet/dist/leaflet.css",
+              "./node_modules/@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css",
               "src/styles.scss"
             ]
           },
