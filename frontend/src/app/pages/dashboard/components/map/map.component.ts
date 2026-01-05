@@ -52,7 +52,11 @@ export class MapComponent implements AfterViewInit, OnChanges {
   }
 
   private initMap(): void {
-    this.map = L.map('map', { center: [45.4642, 9.19], zoom: 12 });
+    this.map = L.map('map', {
+      center: [45.4642, 9.19],
+      zoom: 12,
+      zoomControl: false,
+    });
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.map);
     this.fencesGroup.addTo(this.map);
     this.map.pm.setGlobalOptions({ snappable: true });
