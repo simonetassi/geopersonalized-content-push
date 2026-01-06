@@ -12,6 +12,7 @@ import {
 import { GeofenceService } from '@/geofences/geofence.service';
 import { UsersService } from '@/users/users.service';
 import { EventDTO, FindEventsDTO } from './dto';
+import { EventsGateway } from './events.gateway';
 
 @Injectable()
 export class EventsService {
@@ -20,6 +21,7 @@ export class EventsService {
     private readonly eventRepository: Repository<Event>,
     private readonly geofenceService: GeofenceService,
     private readonly userService: UsersService,
+    private readonly eventsGateway: EventsGateway,
   ) {}
   public async create(createEventDTO: CreateEventDTO): Promise<EventDTO> {
     const { userId, fenceId, ...eventData } = createEventDTO;
@@ -34,11 +36,15 @@ export class EventsService {
       throw new NotFoundException(`Geofence with ID ${fenceId} not found`);
     }
 
-    return this.eventRepository.save({
+    const savedEvent = await this.eventRepository.save({
       ...eventData,
       user,
       fence,
     });
+
+    this.eventsGateway.broadcastNewEvent(savedEvent);
+
+    return savedEvent;
   }
 
   public async findAll(query: FindEventsDTO) {
