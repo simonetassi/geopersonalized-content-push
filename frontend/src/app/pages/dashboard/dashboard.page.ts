@@ -12,6 +12,7 @@ import * as L from 'leaflet';
 import '@geoman-io/leaflet-geoman-free';
 import { GeofencesService } from '@/common/services/geofences.service';
 import { EventsService } from '@/common/services/events.service';
+import { AnalyticsComponent } from './components/analytics/analytics.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -22,6 +23,7 @@ import { EventsService } from '@/common/services/events.service';
     DetailPanelComponent,
     MapComponent,
     AsyncPipe,
+    AnalyticsComponent,
   ],
   templateUrl: './dashboard.page.html',
   styleUrl: './dashboard.page.scss',
