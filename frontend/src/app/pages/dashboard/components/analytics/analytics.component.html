@@ -1,0 +1,95 @@
+<div
+  class="absolute bottom-0 left-0 right-0 z-[30] bg-slate-900/95 backdrop-blur-xl border-t border-slate-700 shadow-[0_-10px_40px_rgba(0,0,0,0.5)] transition-all duration-500 ease-in-out font-sans"
+  [class.h-80]="isExpanded"
+  [class.h-12]="!isExpanded"
+>
+  <div
+    (click)="toggleTray()"
+    class="h-12 flex items-center justify-between px-6 cursor-pointer hover:bg-white/5 transition-colors"
+  >
+    <div class="flex items-center gap-3">
+      <div class="flex h-2 w-2 relative">
+        <span
+          class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"
+        ></span>
+        <span class="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+      </div>
+      <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]"
+        >System Engagement Analytics</span
+      >
+    </div>
+    <div class="flex items-center gap-4">
+      <div class="hidden md:flex gap-4 text-[10px] font-bold uppercase tracking-widest">
+        <span class="text-emerald-400">In: {{ entryCount }}</span>
+        <span class="text-amber-400">Out: {{ exitCount }}</span>
+      </div>
+      <span class="text-slate-500 transition-transform duration-300" [class.rotate-180]="isExpanded"
+        >▲</span
+      >
+    </div>
+  </div>
+  @if (isExpanded) {
+    <div
+      class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6 h-[calc(100%-3rem)] animate-in fade-in slide-in-from-bottom-4 duration-500"
+    >
+      <div class="bg-slate-800/40 rounded-2xl p-4 border border-slate-700/50 flex flex-col">
+        <h4 class="text-slate-400 text-[10px] font-black uppercase mb-3 tracking-widest">
+          Live Traffic (Last 10 min)
+        </h4>
+        <div class="flex-grow">
+          <canvas
+            baseChart
+            [data]="lineChartData"
+            [options]="chartOptions"
+            [type]="'line'"
+          ></canvas>
+        </div>
+      </div>
+      <div class="bg-slate-800/40 rounded-2xl p-4 border border-slate-700/50 flex flex-col">
+        <h4 class="text-indigo-400 text-[10px] font-black uppercase mb-3 tracking-widest">
+          Top Active Areas
+        </h4>
+        <div class="flex-grow">
+          <canvas baseChart [data]="barChartData" [options]="chartOptions" [type]="'bar'"></canvas>
+        </div>
+      </div>
+      <div
+        class="bg-slate-800/40 rounded-2xl p-4 border border-slate-700/50 flex flex-col overflow-hidden"
+      >
+        <h4 class="text-pink-400 text-[10px] font-black uppercase mb-3 tracking-widest">
+          Signal Log
+        </h4>
+        <div class="flex-grow overflow-y-auto pr-2 custom-scrollbar space-y-2">
+          @for (event of events.slice(0, 10); track event.id) {
+            <div
+              class="flex items-center justify-between p-2 rounded-xl bg-white/5 border border-white/5 group hover:bg-white/10 transition-colors"
+            >
+              <div class="flex flex-col min-w-0">
+                <span class="text-[11px] font-bold text-slate-100 truncate"
+                  >{{ event.user.name }} {{ event.user.surname }}</span
+                >
+                <span class="text-[9px] text-slate-500">{{ event.fence.name }}</span>
+              </div>
+              <div class="flex flex-col items-end shrink-0">
+                <span
+                  [class]="event.type === 'entry' ? 'text-emerald-400' : 'text-amber-400'"
+                  class="text-[10px] font-black uppercase"
+                >
+                  {{ event.type }}
+                </span>
+                <span class="text-[10px] text-slate-500 font-mono">{{
+                  event.timestamp | date: 'HH:mm'
+                }}</span>
+              </div>
+            </div>
+          } @empty {
+            <div class="flex flex-col items-center justify-center h-full opacity-20">
+              <span class="text-2xl">📡</span>
+              <p class="text-[10px] uppercase font-bold mt-2">No Signals</p>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  }
+</div>
