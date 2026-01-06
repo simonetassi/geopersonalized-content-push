@@ -1,4 +1,4 @@
-import { Geofence } from '@/common/interfaces';
+import { EventType, Geofence } from '@/common/interfaces';
 import { isPlatformBrowser } from '@angular/common';
 import {
   AfterViewInit,
@@ -131,5 +131,34 @@ export class MapComponent implements AfterViewInit, OnChanges {
       else if (geojson.type === 'Feature') return geojson.geometry;
     }
     return null;
+  }
+
+  public pulseGeofence(fenceId: string, type: EventType): void {
+    const layer = this.fencesGroup
+      .getLayers()
+      .find((l) => (l.options as ExtendedLayerOptions).id === fenceId) as L.Path;
+
+    const originalFence = this.geofences.find((f) => f.id === fenceId);
+
+    if (layer && originalFence && 'setStyle' in layer) {
+      const originalColor = originalFence.metadata.color;
+      const pulseColor = type === EventType.ENTRY ? '#10b981' : '#f59e0b';
+
+      layer.setStyle({
+        fillOpacity: 0.8,
+        fillColor: pulseColor,
+        color: pulseColor,
+        weight: 4,
+      });
+
+      setTimeout(() => {
+        layer.setStyle({
+          fillColor: originalColor,
+          color: originalColor,
+          fillOpacity: 0.2,
+          weight: 2,
+        });
+      }, 1000);
+    }
   }
 }

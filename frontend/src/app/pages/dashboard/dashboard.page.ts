@@ -11,6 +11,8 @@ import { AsyncPipe } from '@angular/common';
 import * as L from 'leaflet';
 import '@geoman-io/leaflet-geoman-free';
 import { GeofencesService } from '@/common/services/geofences.service';
+import { EventsService } from '@/common/services/events.service';
+import { AnalyticsComponent } from './components/analytics/analytics.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -21,6 +23,7 @@ import { GeofencesService } from '@/common/services/geofences.service';
     DetailPanelComponent,
     MapComponent,
     AsyncPipe,
+    AnalyticsComponent,
   ],
   templateUrl: './dashboard.page.html',
   styleUrl: './dashboard.page.scss',
@@ -29,12 +32,23 @@ export class DashboardPage {
   @ViewChild(MapComponent) mapComponent!: MapComponent;
 
   public selectedFence?: Geofence;
-  public isCreating = false;
-  public isModalOpen = false;
-  public isMapEditing = false;
+  public isCreating: boolean = false;
+  public isModalOpen: boolean = false;
+  public isMapEditing: boolean = false;
   private tempLayer?: L.Layer;
+  public liveUsersCount: number = 0;
 
   public geofenceService = inject(GeofencesService);
+  public eventsService = inject(EventsService);
+
+  public constructor() {
+    this.eventsService.latestEvents$.subscribe((events) => {
+      if (events.length > 0) {
+        const lastEvent = events[0];
+        this.mapComponent.pulseGeofence(lastEvent.fence.id, lastEvent.type);
+      }
+    });
+  }
 
   public handleSelect(fence: Geofence): void {
     this.selectedFence = fence;
