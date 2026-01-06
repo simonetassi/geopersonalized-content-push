@@ -25,6 +25,18 @@
     (saved)="handleSaveEdit($event)"
     (deleted)="handleDelete($event)"
   ></app-detail-panel>
+
+  <div class="absolute top-6 left-1/2 -translate-x-1/2 z-10 flex gap-4 pointer-events-none">
+    <div
+      class="pointer-events-auto bg-slate-900/80 backdrop-blur-md border border-slate-700/50 px-6 py-2 rounded-2xl flex items-center gap-3"
+    >
+      <span class="text-indigo-400 font-bold">LIVE USERS:</span>
+      <span class="text-white font-mono text-lg">{{
+        (eventsService.liveUsersCount$ | async) || 0
+      }}</span>
+    </div>
+  </div>
+
   @if (isCreating) {
     <div
       class="absolute top-8 left-1/2 -translate-x-1/2 z-20 bg-slate-900/90 backdrop-blur-md px-6 py-3 rounded-2xl border border-indigo-500 shadow-2xl flex items-center gap-4 pointer-events-auto"
