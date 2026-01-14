@@ -1,16 +1,34 @@
-import React, { JSX } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, Alert, Linking } from 'react-native';
+import React, { JSX, useEffect } from 'react';
+import {
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Alert,
+  Linking,
+  ActivityIndicator,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { User } from '@/interfaces';
+import { Geofence, User } from '@/interfaces';
 import { useAuthStore } from '@/store/useAuthStore';
 import { usePermissions } from '@/hooks/usePermissions';
 import * as Location from 'expo-location';
+import { useGeofenceStore } from '@/store/useGeofenceStore';
 
 export default function HomeScreen(): JSX.Element {
   const user = useAuthStore((state): User | null => state.user);
   const logout = useAuthStore((state): (() => void) => state.logout);
 
+  const geofences = useGeofenceStore((state): Geofence[] => state.geofences);
+  const lastSync = useGeofenceStore((state): string | null => state.lastSync);
+  const isLoading = useGeofenceStore((state): boolean => state.isLoading);
+  const syncGeofences = useGeofenceStore((state): (() => Promise<void>) => state.syncGeofences);
+
   const { isGranted, request, backgroundStatus, status } = usePermissions();
+
+  useEffect(() => {
+    void syncGeofences();
+  }, []);
 
   const handleEnablePermissions = async (): Promise<void> => {
     const success = await request();
@@ -29,6 +47,10 @@ export default function HomeScreen(): JSX.Element {
         ],
       );
     }
+  };
+
+  const handleSync = async (): Promise<void> => {
+    await syncGeofences();
   };
 
   // PERMISSION GUARD
@@ -110,6 +132,36 @@ export default function HomeScreen(): JSX.Element {
           </Text>
           <Text style={styles.statusText}>● Monitoring Active</Text>
         </View>
+
+        <View style={styles.card}>
+          <View style={styles.cardLeft}>
+            <Text style={styles.cardLabel}>Active Geofences</Text>
+            <Text style={styles.count}>{geofences.length}</Text>
+          </View>
+
+          <View style={styles.cardRight}>
+            <TouchableOpacity
+              style={[styles.syncBtn, isLoading && styles.disabledBtn]}
+              onPress={() => {
+                void handleSync();
+              }}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <ActivityIndicator size="small" color="#fff" />
+              ) : (
+                <Text style={styles.syncText}>↻ Sync</Text>
+              )}
+            </TouchableOpacity>
+
+            <Text style={styles.time}>
+              {lastSync
+                ? new Date(lastSync).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                : 'Never'}
+            </Text>
+          </View>
+        </View>
+
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.primaryButton}>
             <Text style={styles.primaryButtonText}>Open Map</Text>
@@ -187,6 +239,59 @@ const styles = StyleSheet.create({
     color: '#34C759',
     fontWeight: '600',
     fontSize: 14,
+  },
+  card: {
+    backgroundColor: '#F9F9F9',
+    borderRadius: 12,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    marginBottom: 24,
+    borderWidth: 1,
+    borderColor: '#EEEEEE',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  cardLeft: {
+    flexDirection: 'column',
+    justifyContent: 'center',
+  },
+  cardRight: {
+    flexDirection: 'column',
+    alignItems: 'flex-end',
+    gap: 6,
+  },
+  cardLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#666',
+    marginBottom: 4,
+  },
+  count: {
+    fontSize: 28,
+    fontWeight: '800',
+    color: '#000',
+    lineHeight: 32,
+  },
+  syncBtn: {
+    backgroundColor: '#000',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+    minWidth: 70,
+    alignItems: 'center',
+  },
+  disabledBtn: {
+    backgroundColor: '#999',
+  },
+  syncText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  time: {
+    fontSize: 11,
+    color: '#999',
   },
   buttonContainer: {
     gap: 16,
