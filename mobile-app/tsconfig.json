@@ -15,6 +15,6 @@
       "@/*": ["src/*"]
     }
   },
-  "include": ["src/**/*", "App.tsx", "index.js"],
+  "include": ["src/**/*", "App.tsx", "index.js", ".expo/types/**/*.ts", "expo-env.d.ts"],
   "exclude": ["node_modules", "babel.config.js", "metro.config.js", "jest.config.js"]
 }

@@ -40,10 +40,6 @@
       "prettier --write"
     ]
   },
-  "workspaces": [
-    "mobile-app",
-    "backend"
-  ],
   "devDependencies": {
     "@eslint/js": "^9.39.1",
     "eslint": "^9.39.1",
