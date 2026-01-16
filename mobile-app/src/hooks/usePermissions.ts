@@ -4,6 +4,7 @@ import * as Location from 'expo-location';
 
 interface UsePermissionsReturn {
   isGranted: boolean;
+  check: () => Promise<void>;
   request: () => Promise<boolean>;
   status: Location.PermissionStatus;
   backgroundStatus: Location.PermissionStatus;
@@ -56,5 +57,5 @@ export const usePermissions = (): UsePermissionsReturn => {
     status === Location.PermissionStatus.GRANTED &&
     backgroundStatus === Location.PermissionStatus.GRANTED;
 
-  return { isGranted, request, status, backgroundStatus };
+  return { isGranted, check, request, status, backgroundStatus };
 };
