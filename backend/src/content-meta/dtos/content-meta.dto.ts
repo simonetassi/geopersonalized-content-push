@@ -1,7 +1,16 @@
 import { GeofenceDTO } from '@/geofences/dtos';
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
-import { IsDefined, IsNotEmpty } from 'class-validator';
+import { IsDefined, IsEnum, IsNotEmpty, IsUUID } from 'class-validator';
+
+export enum ContentType {
+  TEXT = 'TEXT',
+  IMAGE = 'IMAGE',
+  VIDEO = 'VIDEO',
+  HTML = 'HTML',
+  JSON = 'JSON',
+}
+
 export class ContentMetaDTO {
   @Expose()
   @IsNotEmpty()
@@ -9,15 +18,21 @@ export class ContentMetaDTO {
   id: string;
 
   @Expose()
+  @IsUUID()
+  @ApiProperty({ format: 'uuid' })
+  fenceId: string;
+
+  @Expose()
   @IsDefined()
   @Type(() => GeofenceDTO)
-  @ApiProperty()
-  fence: GeofenceDTO;
+  @ApiProperty({ type: () => GeofenceDTO, required: false })
+  fence?: GeofenceDTO;
 
   @Expose()
   @IsNotEmpty()
-  @ApiProperty()
-  type: string;
+  @IsEnum(ContentType)
+  @ApiProperty({ enum: ContentType, example: ContentType.IMAGE })
+  type: ContentType;
 
   @Expose()
   @IsNotEmpty()

@@ -6,18 +6,28 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { ContentType } from '../dtos';
 
 @Entity()
 export class ContentMeta {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => Geofence, (geofence) => geofence.id, { onDelete: 'CASCADE' })
+  @Column({ name: 'fenceId' })
+  fenceId: string;
+
+  @ManyToOne(() => Geofence, (geofence) => geofence.contents, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'fenceId' })
   fence: Geofence;
 
-  @Column()
-  type: string;
+  @Column({
+    type: 'enum',
+    enum: ContentType,
+    default: ContentType.TEXT,
+  })
+  type: ContentType;
 
   @Column()
   descriptor: string;
