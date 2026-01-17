@@ -14,8 +14,15 @@ import { useAuthStore } from '@/store/useAuthStore';
 import { usePermissions } from '@/hooks/usePermissions';
 import * as Location from 'expo-location';
 import { useGeofenceStore } from '@/store/useGeofenceStore';
+import { useNavigation } from 'expo-router';
+
+interface HistoryScreenNavigationProp {
+  navigate: (screen: string) => void;
+}
 
 export default function HomeScreen(): JSX.Element {
+  const navigation = useNavigation<HistoryScreenNavigationProp>();
+
   const user = useAuthStore((state): User | null => state.user);
   const logout = useAuthStore((state): (() => void) => state.logout);
 
@@ -166,7 +173,12 @@ export default function HomeScreen(): JSX.Element {
           <TouchableOpacity style={styles.primaryButton}>
             <Text style={styles.primaryButtonText}>Open Map</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.secondaryButton}>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('History');
+            }}
+            style={styles.secondaryButton}
+          >
             <Text style={styles.secondaryButtonText}>View History</Text>
           </TouchableOpacity>
         </View>
