@@ -17,11 +17,14 @@ export class GeofenceService {
   }
 
   public findAll(): Promise<Geofence[]> {
-    return this.geofenceRepository.find();
+    return this.geofenceRepository.find({ relations: ['contents'] });
   }
 
   public findOne(id: string): Promise<Geofence | null> {
-    return this.geofenceRepository.findOneBy({ id });
+    return this.geofenceRepository.findOne({
+      where: { id },
+      relations: ['contents'],
+    });
   }
 
   async update(

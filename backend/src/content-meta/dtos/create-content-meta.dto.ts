@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
+import { ContentType } from './content-meta.dto';
 
 export class CreateContentMetaDTO {
   @IsUUID()
@@ -10,7 +11,7 @@ export class CreateContentMetaDTO {
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
-  type: string;
+  type: ContentType;
 
   @IsString()
   @IsNotEmpty()

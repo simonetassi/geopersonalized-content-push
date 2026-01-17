@@ -2,11 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ContentMeta } from './entities/content-meta.entity';
-import {
-  ContentMetaDTO,
-  CreateContentMetaDTO,
-  UpdateContentMetaDTO,
-} from './dtos';
+import { CreateContentMetaDTO, UpdateContentMetaDTO } from './dtos';
 import { Geofence } from '@/geofences/entities/geofence.entity';
 
 @Injectable()
@@ -20,7 +16,7 @@ export class ContentMetaService {
 
   public async create(
     createContentMetaDto: CreateContentMetaDTO,
-  ): Promise<ContentMetaDTO> {
+  ): Promise<ContentMeta> {
     const fence = await this.geofenceRepository.findOneBy({
       id: createContentMetaDto.fenceId,
     });
