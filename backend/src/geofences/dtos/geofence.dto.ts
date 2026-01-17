@@ -1,5 +1,6 @@
+import { ContentMetaDTO } from '@/content-meta/dtos';
 import { ApiProperty } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
 import { IsDefined, IsNotEmpty } from 'class-validator';
 import { Geometry } from 'geojson';
 
@@ -23,4 +24,9 @@ export class GeofenceDTO {
   @IsDefined()
   @ApiProperty()
   metadata: Record<string, any>;
+
+  @Expose()
+  @Type(() => ContentMetaDTO)
+  @ApiProperty({ type: () => [ContentMetaDTO] })
+  contents: ContentMetaDTO[];
 }

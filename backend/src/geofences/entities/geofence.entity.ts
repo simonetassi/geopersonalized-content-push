@@ -1,5 +1,6 @@
+import { ContentMeta } from '@/content-meta/entities/content-meta.entity';
 import { Geometry } from 'geojson';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Geofence {
@@ -18,4 +19,7 @@ export class Geofence {
 
   @Column('jsonb')
   metadata: Record<string, any>;
+
+  @OneToMany(() => ContentMeta, (contentMeta) => contentMeta.fence)
+  contents: ContentMeta[];
 }
