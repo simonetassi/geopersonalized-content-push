@@ -62,7 +62,7 @@ export class EventsService {
 
     return await this.eventRepository.find({
       where,
-      relations: ['user', 'fence'],
+      relations: ['user', 'fence', 'fence.contents'],
       order: {
         timestamp: 'DESC',
       },
