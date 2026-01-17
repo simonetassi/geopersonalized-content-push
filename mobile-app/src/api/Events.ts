@@ -9,3 +9,14 @@ export const createEvent = async (payload: EventPayload): Promise<Event> => {
     throw new Error((error as Error).message);
   }
 };
+
+export const getEvents = async (userId: string): Promise<Event[]> => {
+  try {
+    const response = await api.get<Event[]>(`/events`, {
+      params: { userId },
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error((error as Error).message);
+  }
+};
