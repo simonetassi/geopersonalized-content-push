@@ -9,6 +9,7 @@ export enum ContentType {
   VIDEO = 'VIDEO',
   HTML = 'HTML',
   JSON = 'JSON',
+  PDF = 'PDF',
 }
 
 export class ContentMetaDTO {

@@ -25,6 +25,8 @@ const getFileExtension = (content: ContentMeta): string => {
       return 'html';
     case ContentType.TEXT:
       return 'txt';
+    case ContentType.PDF:
+      return 'pdf';
     default:
       return 'bin';
   }
