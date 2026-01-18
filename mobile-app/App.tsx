@@ -13,6 +13,7 @@ import { useEffect } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import HistoryScreen from '@/screens/HistoryScreen';
+import ContentViewerScreen from '@/screens/ContentViewerScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -66,6 +67,11 @@ export default function App() {
                 name="History"
                 component={HistoryScreen}
                 options={{ headerShown: false }}
+              />
+              <Stack.Screen 
+                name="ContentViewer" 
+                component={ContentViewerScreen} 
+                options={{ headerShown: false }} 
               />
             </>
           ) : (
