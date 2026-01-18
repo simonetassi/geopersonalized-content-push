@@ -12,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { ContentMeta, ContentType } from '@/interfaces';
 import { useContentStore } from '@/store/useContentStore';
+import { openFileViewer } from '@/utils/fileHandler';
 
 type ParamList = {
   ContentViewer: { content: ContentMeta };
@@ -30,6 +31,11 @@ export default function ContentViewerScreen(): JSX.Element {
   const handleDownload = async (): Promise<void> => {
     const uri = await downloadContent(content);
     if (!uri) Alert.alert('Error', 'Download failed.');
+    else {
+      if (content.type !== ContentType.IMAGE) {
+        await openFileViewer(uri);
+      }
+    }
   };
 
   const handleDelete = (): void => {
@@ -81,7 +87,15 @@ export default function ContentViewerScreen(): JSX.Element {
         <Text style={styles.iconLarge}>📄</Text>
         <Text style={styles.title}>{content.descriptor}</Text>
         <Text style={styles.successText}>File Saved Successfully</Text>
-        <Text style={styles.pathText}>{cachedUri}</Text>
+
+        <TouchableOpacity
+          style={[styles.downloadBtn, { marginTop: 20, backgroundColor: '#34C759' }]}
+          onPress={() => {
+            void openFileViewer(cachedUri);
+          }}
+        >
+          <Text style={styles.downloadText}>Open File</Text>
+        </TouchableOpacity>
       </View>
     );
   };
