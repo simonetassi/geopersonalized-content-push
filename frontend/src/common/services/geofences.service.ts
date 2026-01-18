@@ -18,7 +18,8 @@ export class GeofencesService {
       if (!query) return fences;
       return fences.filter(
         (f) =>
-          f.name.toLowerCase().includes(query) || f.metadata.category.toLowerCase().includes(query),
+          f.name.toLowerCase().includes(query) ||
+          f.metadata?.category?.toLowerCase().includes(query),
       );
     }),
   );
@@ -48,16 +49,18 @@ export class GeofencesService {
   }
 
   public updateFence(updated: Geofence): Observable<Geofence> {
-    const { id, ...payload } = updated;
-
-    console.log(payload);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { id, contents, ...payload } = updated;
 
     return this.http.patch<Geofence>(`${this.baseUrl}/${id}`, payload).pipe(
       tap((saved) => {
         const current = this.fences$.value;
         const index = current.findIndex((f) => f.id === saved.id);
         if (index !== -1) {
-          current[index] = saved;
+          const existingContents = current[index].contents;
+
+          current[index] = { ...saved, contents: saved.contents || existingContents };
+
           this.fences$.next([...current]);
         }
       }),
