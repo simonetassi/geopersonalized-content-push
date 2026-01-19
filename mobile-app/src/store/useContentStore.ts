@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { File, Paths } from 'expo-file-system';
-import { ContentMeta, ContentType } from '@/interfaces';
+import { ContentMeta, ContentType, Geofence } from '@/interfaces';
 import { getContentProxyUrl } from '@/api/Content';
 
 interface ContentState {
@@ -11,6 +11,7 @@ interface ContentState {
   downloadContent: (content: ContentMeta) => Promise<string | null>;
   deleteContent: (contentId: string) => void;
   isCached: (contentId: string) => boolean;
+  prefetchByGeofence: (geofence: Geofence) => Promise<void>;
 }
 
 const getFileExtension = (content: ContentMeta): string => {
@@ -97,6 +98,20 @@ export const useContentStore = create<ContentState>()(
           delete newCache[contentId];
           set({ cachedFiles: newCache });
         }
+      },
+
+      prefetchByGeofence: async (geofence: Geofence) => {
+        const { downloadContent, cachedFiles } = get();
+
+        if (!geofence.contents || geofence.contents.length === 0) return;
+
+        console.log(`[Content] Prefetching ${geofence.contents.length} items for ${geofence.name}`);
+
+        const content = geofence.contents[0];
+        if (cachedFiles[content.id]) return;
+        await downloadContent(content);
+
+        console.log(`[Content] Prefetch finished for ${geofence.name}`);
       },
     }),
     {

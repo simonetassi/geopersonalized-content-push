@@ -7,6 +7,7 @@ import { Geofence } from '@/interfaces';
 import { GEOFENCE_TASK_NAME } from '@/utils/constants';
 import { useAuthStore } from '@/store/useAuthStore';
 import { createEvent } from '@/api/Events';
+import { useContentStore } from '@/store/useContentStore';
 
 interface GeofenceTaskData {
   eventType: Location.GeofencingEventType;
@@ -89,6 +90,8 @@ TaskManager.defineTask(GEOFENCE_TASK_NAME, async ({ data, error }) => {
           console.warn(`[Geofence] ID ${regionId} not found in store!`);
           return;
         }
+
+        void useContentStore.getState().prefetchByGeofence(targetGeofence);
 
         const location = await Location.getCurrentPositionAsync({
           accuracy: Location.Accuracy.BestForNavigation,
