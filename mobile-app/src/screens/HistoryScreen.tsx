@@ -1,4 +1,4 @@
-import { Event } from '@/interfaces';
+import { ContentMeta, Event } from '@/interfaces';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useHistoryStore } from '@/store/useHistoryStore';
 import { Text } from '@react-navigation/elements';
@@ -7,13 +7,20 @@ import { JSX, useCallback, useEffect } from 'react';
 import { FlatList, RefreshControl, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+interface ContentScreenNavigationProp {
+  navigate: (screen: string, params: { content: ContentMeta }) => void;
+}
+
 const HistoryItem = ({ item }: { item: Event }): JSX.Element => {
+  const navigation = useNavigation<ContentScreenNavigationProp>();
   const isEntry = item.type === 'entry';
 
-  const repoUrl = item.fence?.contents?.[0]?.repoUrl;
+  const firstContent = item.fence?.contents?.[0];
+  const repoUrl = firstContent?.repoUrl;
+
   const handleOpenRepo = (): void => {
-    if (repoUrl) {
-      // redirect to repo
+    if (firstContent) {
+      navigation.navigate('ContentViewer', { content: firstContent });
     }
   };
 

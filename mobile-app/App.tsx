@@ -1,7 +1,8 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { useAuthStore } from '@/store/useAuthStore';
-import { NavigationContainer } from '@react-navigation/native';
+import { createNavigationContainerRef, NavigationContainer } from '@react-navigation/native';
+import * as Notifications from 'expo-notifications';
 import LoginScreen from '@/screens/LoginScreen';
 import RegisterScreen from '@/screens/RegisterScreen';
 import HomeScreen from '@/screens/HomeScreen';
@@ -13,6 +14,9 @@ import { useEffect } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import HistoryScreen from '@/screens/HistoryScreen';
+import ContentViewerScreen from '@/screens/ContentViewerScreen';
+
+export const navigationRef = createNavigationContainerRef<any>();
 
 const Stack = createNativeStackNavigator();
 
@@ -26,6 +30,32 @@ export default function App() {
   const stopMonitoring = useGeofenceStore(state => state.stopMonitoring);
 
   const { isGranted, check } = usePermissions();
+
+  useEffect(() => {
+    const subscription = Notifications.addNotificationResponseReceivedListener(response => {
+      
+      const data = response.notification.request.content.data;
+      const geofenceId = data.geofenceId;
+
+      if (geofenceId) {
+        console.log(`[App] Notification clicked for fence: ${geofenceId}`);
+
+        const currentGeofences = useGeofenceStore.getState().geofences;
+        const targetFence = currentGeofences.find(g => g.id === geofenceId);
+        
+        const contentToView = targetFence?.contents?.[0];
+
+        if (contentToView && navigationRef.isReady()) {
+          navigationRef.navigate('ContentViewer', { content: contentToView });
+        } else {
+          console.warn("[App] Content not found or Navigation not ready");
+        }
+      }
+    });
+
+    return () => subscription.remove();
+  }, []);
+
 
   useEffect(() => {
     const manageMonitoring = async () => {
@@ -57,7 +87,7 @@ export default function App() {
 
   return (
     <SafeAreaProvider>
-      <NavigationContainer>
+      <NavigationContainer ref={navigationRef}>
         <Stack.Navigator>
           {isAuthenticated ? (
             <>
@@ -66,6 +96,11 @@ export default function App() {
                 name="History"
                 component={HistoryScreen}
                 options={{ headerShown: false }}
+              />
+              <Stack.Screen 
+                name="ContentViewer" 
+                component={ContentViewerScreen} 
+                options={{ headerShown: false }} 
               />
             </>
           ) : (
