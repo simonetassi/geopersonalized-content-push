@@ -42,13 +42,13 @@ export const convertPolygonToCircle = (id: string, geometry: Polygon): CircularR
       if (dist > maxDistance) maxDistance = dist;
     });
 
-    const radius = Math.ceil(maxDistance * 1.1);
+    const calculatedRadius = Math.ceil(maxDistance * 1.2); // 20% buffer
 
     return {
       identifier: id,
       latitude: center.latitude,
       longitude: center.longitude,
-      radius: radius > 100 ? radius : 100,
+      radius: Math.max(calculatedRadius, 200),
     };
   } catch (error: unknown) {
     console.error('Geometry conversion error:', error);

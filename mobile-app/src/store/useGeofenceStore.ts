@@ -15,11 +15,15 @@ interface GeofenceState {
   isLoading: boolean;
   error: string | null;
   isMonitoring: boolean;
+  activeGeofenceId: string | null;
+  isInsidePolygon: boolean;
 
   syncGeofences: () => Promise<void>;
   clearGeofences: () => void;
   startMonitoring: () => Promise<void>;
   stopMonitoring: () => Promise<void>;
+  setActiveGeofenceId: (id: string | null) => void;
+  setInsidePolygon: (value: boolean) => void;
 }
 
 export const useGeofenceStore = create<GeofenceState>()(
@@ -30,7 +34,15 @@ export const useGeofenceStore = create<GeofenceState>()(
       isLoading: false,
       error: null,
       isMonitoring: false,
+      activeGeofenceId: null,
+      isInsidePolygon: false,
+      setActiveGeofenceId: (id: string | null) => {
+        set({ activeGeofenceId: id });
+      },
 
+      setInsidePolygon: (value: boolean) => {
+        set({ isInsidePolygon: value });
+      },
       syncGeofences: async (): Promise<void> => {
         set({ isLoading: true, error: null });
         try {
@@ -47,7 +59,13 @@ export const useGeofenceStore = create<GeofenceState>()(
       },
 
       clearGeofences: (): void => {
-        set({ geofences: [], lastSync: null, error: null });
+        set({
+          geofences: [] as Geofence[],
+          lastSync: null,
+          error: null,
+          activeGeofenceId: null,
+          isInsidePolygon: false,
+        });
       },
 
       startMonitoring: async (): Promise<void> => {
