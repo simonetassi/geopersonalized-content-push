@@ -7,6 +7,7 @@ import {
   Alert,
   Linking,
   ActivityIndicator,
+  Switch,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Geofence, User } from '@/interfaces';
@@ -15,6 +16,7 @@ import { usePermissions } from '@/hooks/usePermissions';
 import * as Location from 'expo-location';
 import { useGeofenceStore } from '@/store/useGeofenceStore';
 import { useNavigation } from 'expo-router';
+import { useSettingsStore } from '@/store/useSettingsStore';
 
 interface HistoryScreenNavigationProp {
   navigate: (screen: string) => void;
@@ -30,6 +32,9 @@ export default function HomeScreen(): JSX.Element {
   const lastSync = useGeofenceStore((state): string | null => state.lastSync);
   const isLoading = useGeofenceStore((state): boolean => state.isLoading);
   const syncGeofences = useGeofenceStore((state): (() => Promise<void>) => state.syncGeofences);
+
+  const isPrivacyEnabled = useSettingsStore(state => state.isPrivacyEnabled);
+  const togglePrivacy = useSettingsStore(state => state.togglePrivacy);
 
   const { isGranted, request, backgroundStatus, status } = usePermissions();
 
@@ -182,6 +187,22 @@ export default function HomeScreen(): JSX.Element {
             <Text style={styles.secondaryButtonText}>View History</Text>
           </TouchableOpacity>
         </View>
+        <View style={styles.infoBlock}>
+          <View style={styles.privacyRow}>
+            <Text style={styles.privacyLabel}>Location Privacy (Cloaking)</Text>
+            <Switch
+              value={isPrivacyEnabled}
+              onValueChange={togglePrivacy}
+              trackColor={{ false: '#767577', true: '#34C759' }}
+            />
+          </View>
+          <Text style={styles.privacyHint}>
+            {isPrivacyEnabled
+              ? 'Backend receives approximate location (~110m accuracy).'
+              : 'Backend receives precise location.'}
+          </Text>
+        </View>
+
         <View style={styles.footer}>
           <TouchableOpacity onPress={logout}>
             <Text style={styles.logoutText}>Log Out</Text>
@@ -251,6 +272,25 @@ const styles = StyleSheet.create({
     color: '#34C759',
     fontWeight: '600',
     fontSize: 14,
+  },
+  privacyRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 15,
+    paddingTop: 15,
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
+  },
+  privacyLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+  },
+  privacyHint: {
+    fontSize: 12,
+    color: '#888',
+    marginTop: 5,
   },
   card: {
     backgroundColor: '#F9F9F9',

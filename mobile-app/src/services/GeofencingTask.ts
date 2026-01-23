@@ -8,6 +8,8 @@ import { GEOFENCE_TASK_NAME, PRECISION_TASK_NAME } from '@/utils/constants';
 import { useAuthStore } from '@/store/useAuthStore';
 import { createEvent } from '@/api/Events';
 import { useContentStore } from '@/store/useContentStore';
+import { useSettingsStore } from '@/store/useSettingsStore';
+import { applyCloaking } from '@/utils/privacy';
 
 interface GeofenceTaskData {
   eventType: Location.GeofencingEventType;
@@ -64,14 +66,29 @@ const sendEventToBackend = async (
 
     if (!user) return;
 
-    console.log(`[Geofence] Sending ${type} event to backend...`);
+    const isPrivacyEnabled = useSettingsStore.getState().isPrivacyEnabled;
+
+    let finalLat = latitude;
+    let finalLon = longitude;
+
+    if (isPrivacyEnabled) {
+      const cloaked = applyCloaking(latitude, longitude);
+      finalLat = cloaked.latitude;
+      finalLon = cloaked.longitude;
+      console.log(
+        `[Privacy] Cloaking ACTIVE. Real: [${latitude}, ${longitude}] -> Sent: [${finalLat}, ${finalLon}]`,
+      );
+    } else {
+      console.log(`[Privacy] Cloaking OFF. Sending precise location.`);
+    }
+
     await createEvent({
       type,
       userId: user.id,
       fenceId: geofence.id,
       location: {
         type: 'Point',
-        coordinates: [longitude, latitude],
+        coordinates: [finalLon, finalLat],
       },
       timestamp: new Date().toISOString(),
     });
