@@ -7,6 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ContentMetaModule } from './content-meta/content-meta.module';
 import { UsersModule } from './users/users.module';
 import { EventsModule } from './events/events.module';
+import { PrivacyAnalysisModule } from './privacy-analysis/privacy-analysis.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { EventsModule } from './events/events.module';
     ContentMetaModule,
     UsersModule,
     EventsModule,
+    PrivacyAnalysisModule,
   ],
   controllers: [AppController],
   providers: [AppService],
