@@ -3,11 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PrivacyAnalysisLog } from './entities/privacy-analysis-log.entity';
 import { Geofence } from '@/geofences/entities/geofence.entity';
-
-interface CentroidResult {
-  lat: number;
-  lon: number;
-}
+import { LatLonCoordinates } from '@/common/interfaces/lat-lon-coordinates.inteface';
 
 interface DistanceResult {
   meters: number;
@@ -49,7 +45,7 @@ export class PrivacyAnalysisService {
     const fence = await this.fenceRepository.findOneBy({ id: fenceId });
     if (!fence) throw new NotFoundException('Fence not found');
 
-    const centerRes: CentroidResult[] = await this.fenceRepository.query(
+    const centerRes: LatLonCoordinates[] = await this.fenceRepository.query(
       `SELECT ST_X(ST_Centroid(geometry)) as lon, ST_Y(ST_Centroid(geometry)) as lat FROM geofence WHERE id = $1`,
       [fenceId],
     );
