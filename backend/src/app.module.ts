@@ -8,6 +8,7 @@ import { ContentMetaModule } from './content-meta/content-meta.module';
 import { UsersModule } from './users/users.module';
 import { EventsModule } from './events/events.module';
 import { PrivacyAnalysisModule } from './privacy-analysis/privacy-analysis.module';
+import { AnalyticsModule } from './analytics/analytics.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { PrivacyAnalysisModule } from './privacy-analysis/privacy-analysis.modul
     ContentMetaModule,
     UsersModule,
     EventsModule,
+    AnalyticsModule,
     PrivacyAnalysisModule,
   ],
   controllers: [AppController],
