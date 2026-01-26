@@ -1,1 +1,25 @@
 <div id="map" class="absolute inset-0 z-0"></div>
+<div
+  class="absolute top-6 right-4 z-20 transition-all duration-300 ease-in-out transform"
+  [class.opacity-0]="selectedFenceId"
+  [class.translate-x-4]="selectedFenceId"
+  [class.pointer-events-none]="selectedFenceId"
+>
+  <button
+    (click)="toggleHeatmap()"
+    class="flex items-center gap-2 px-3 py-2 rounded-lg shadow-sm border transition-colors duration-200 font-medium text-xs uppercase tracking-wide"
+    [class.bg-indigo-600]="isHeatmapActive"
+    [class.text-white]="isHeatmapActive"
+    [class.bg-white]="!isHeatmapActive"
+    [class.border-slate-200]="!isHeatmapActive"
+    [class.text-slate-700]="!isHeatmapActive"
+  >
+    <div
+      class="w-2 h-2 rounded-full"
+      [class.bg-white]="isHeatmapActive"
+      [class.bg-slate-400]="!isHeatmapActive"
+    ></div>
+
+    <span>Heatmap</span>
+  </button>
+</div>

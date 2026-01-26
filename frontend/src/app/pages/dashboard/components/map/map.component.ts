@@ -12,8 +12,11 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import * as L from 'leaflet';
+import 'leaflet.heat';
 import '@geoman-io/leaflet-geoman-free';
-import { FeatureCollection, Geometry } from 'geojson';
+import { FeatureCollection, Geometry, Point } from 'geojson';
+import { firstValueFrom } from 'rxjs';
+import { AnalyticsService } from '@/common/services/analytics.service';
 
 interface ExtendedLayerOptions extends L.LayerOptions {
   id?: string;
@@ -27,6 +30,7 @@ interface ExtendedLayerOptions extends L.LayerOptions {
 })
 export class MapComponent implements AfterViewInit, OnChanges {
   private platformId = inject(PLATFORM_ID);
+  private analyticsService = inject(AnalyticsService);
 
   @Input() public geofences: Geofence[] = [];
   @Input() public selectedFenceId?: string;
@@ -38,6 +42,9 @@ export class MapComponent implements AfterViewInit, OnChanges {
 
   private map?: L.Map;
   private fencesGroup = L.featureGroup();
+
+  private heatmapLayer?: L.Layer;
+  public isHeatmapActive: boolean = false;
 
   private lastEditedLayer?: L.Layer;
 
@@ -159,6 +166,58 @@ export class MapComponent implements AfterViewInit, OnChanges {
           weight: 2,
         });
       }, 1000);
+    }
+  }
+
+  private async loadHeatmapLayer(): Promise<void> {
+    if (!this.map) return;
+
+    try {
+      const geoJsonData = await firstValueFrom(this.analyticsService.getHeatmapData());
+
+      const collection = geoJsonData as FeatureCollection<Point, { weight: number }>;
+
+      const heatPoints = collection.features.map((f) => {
+        const [lon, lat] = f.geometry.coordinates;
+        const intensity = f.properties.weight || 0.5;
+        return [lat, lon, intensity] as [number, number, number];
+      });
+
+      this.heatmapLayer = L.heatLayer(heatPoints, {
+        radius: 25,
+        blur: 15,
+        maxZoom: 17,
+        gradient: {
+          0.4: 'blue',
+          0.65: 'lime',
+          1: 'red',
+        },
+      });
+
+      if (this.heatmapLayer) {
+        this.map.addLayer(this.heatmapLayer);
+      }
+    } catch (error) {
+      console.error('Failed to load heatmap data', error);
+      this.isHeatmapActive = false;
+    }
+  }
+
+  public async toggleHeatmap(): Promise<void> {
+    if (!this.map) return;
+
+    this.isHeatmapActive = !this.isHeatmapActive;
+
+    if (this.isHeatmapActive) {
+      if (!this.heatmapLayer) {
+        await this.loadHeatmapLayer();
+      } else {
+        this.map.addLayer(this.heatmapLayer);
+      }
+    } else {
+      if (this.heatmapLayer) {
+        this.map.removeLayer(this.heatmapLayer);
+      }
     }
   }
 }
