@@ -1,95 +1,202 @@
 <div
   class="absolute bottom-0 left-0 right-0 z-[30] bg-slate-900/95 backdrop-blur-xl border-t border-slate-700 shadow-[0_-10px_40px_rgba(0,0,0,0.5)] transition-all duration-500 ease-in-out font-sans"
-  [class.h-80]="isExpanded"
+  [class.h-96]="isExpanded"
   [class.h-12]="!isExpanded"
 >
-  <div
-    (click)="toggleTray()"
-    class="h-12 flex items-center justify-between px-6 cursor-pointer hover:bg-white/5 transition-colors"
-  >
-    <div class="flex items-center gap-3">
-      <div class="flex h-2 w-2 relative">
-        <span
-          class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"
-        ></span>
-        <span class="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
-      </div>
-      <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]"
-        >System Engagement Analytics</span
+  <div class="h-12 flex items-center justify-between px-6 border-b border-white/5">
+    <div class="flex items-center gap-6">
+      <button
+        (click)="isExpanded ? switchToLive() : toggleTray()"
+        class="flex items-center gap-2 group"
       >
+        <span
+          class="text-[10px] font-black uppercase tracking-[0.2em]"
+          [class.text-white]="viewMode === 'LIVE'"
+          [class.text-slate-500]="viewMode !== 'LIVE'"
+        >
+          Live Data
+        </span>
+      </button>
+
+      <div class="h-3 w-px bg-slate-700"></div>
+      <button
+        (click)="isExpanded ? runAnalysis() : toggleTray()"
+        class="flex items-center gap-2 group focus:outline-none"
+      >
+        <span
+          class="text-[10px] font-black uppercase tracking-[0.2em]"
+          [class.text-white]="viewMode === 'ANALYSIS'"
+          [class.text-slate-500]="viewMode !== 'ANALYSIS'"
+        >
+          Analysis
+        </span>
+      </button>
     </div>
-    <div class="flex items-center gap-4">
-      <div class="hidden md:flex gap-4 text-[10px] font-bold uppercase tracking-widest">
-        <span class="text-emerald-400">In: {{ entryCount }}</span>
-        <span class="text-amber-400">Out: {{ exitCount }}</span>
-      </div>
-      <span class="text-slate-500 transition-transform duration-300" [class.rotate-180]="isExpanded"
+    <div (click)="toggleTray()" class="flex items-center gap-4 cursor-pointer hover:opacity-80">
+      @if (viewMode === 'LIVE') {
+        <div class="hidden md:flex gap-4 text-[10px] font-bold uppercase tracking-widest">
+          <span class="text-emerald-400">In: {{ entryCount }}</span>
+          <span class="text-amber-400">Out: {{ exitCount }}</span>
+        </div>
+      }
+      <span
+        class="text-slate-500 text-xs transition-transform duration-300"
+        [class.rotate-180]="isExpanded"
         >▲</span
       >
     </div>
   </div>
   @if (isExpanded) {
-    <div
-      class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6 h-[calc(100%-3rem)] animate-in fade-in slide-in-from-bottom-4 duration-500"
-    >
-      <div class="bg-slate-800/40 rounded-2xl p-4 border border-slate-700/50 flex flex-col">
-        <h4 class="text-slate-400 text-[10px] font-black uppercase mb-3 tracking-widest">
-          Live Traffic (Last 10 min)
-        </h4>
-        <div class="flex-grow">
-          <canvas
-            baseChart
-            [data]="lineChartData"
-            [options]="chartOptions"
-            [type]="'line'"
-          ></canvas>
-        </div>
-      </div>
-      <div class="bg-slate-800/40 rounded-2xl p-4 border border-slate-700/50 flex flex-col">
-        <h4 class="text-indigo-400 text-[10px] font-black uppercase mb-3 tracking-widest">
-          Top Active Areas
-        </h4>
-        <div class="flex-grow">
-          <canvas baseChart [data]="barChartData" [options]="chartOptions" [type]="'bar'"></canvas>
-        </div>
-      </div>
-      <div
-        class="bg-slate-800/40 rounded-2xl p-4 border border-slate-700/50 flex flex-col overflow-hidden"
-      >
-        <h4 class="text-pink-400 text-[10px] font-black uppercase mb-3 tracking-widest">
-          Signal Log
-        </h4>
-        <div class="flex-grow overflow-y-auto pr-2 custom-scrollbar space-y-2">
-          @for (event of events.slice(0, 10); track event.id) {
-            <div
-              class="flex items-center justify-between p-2 rounded-xl bg-white/5 border border-white/5 group hover:bg-white/10 transition-colors"
-            >
-              <div class="flex flex-col min-w-0">
-                <span class="text-[11px] font-bold text-slate-100 truncate"
-                  >{{ event.user.name }} {{ event.user.surname }}</span
-                >
-                <span class="text-[9px] text-slate-500">{{ event.fence.name }}</span>
-              </div>
-              <div class="flex flex-col items-end shrink-0">
-                <span
-                  [class]="event.type === 'entry' ? 'text-emerald-400' : 'text-amber-400'"
-                  class="text-[10px] font-black uppercase"
-                >
-                  {{ event.type }}
-                </span>
-                <span class="text-[10px] text-slate-500 font-mono">{{
-                  event.timestamp | date: 'HH:mm'
-                }}</span>
-              </div>
+    <div class="h-[calc(100%-3rem)] overflow-hidden bg-slate-950/30">
+      @if (viewMode === 'LIVE') {
+        <div
+          class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6 h-full animate-in fade-in duration-500"
+        >
+          <div class="bg-slate-800/40 rounded-2xl p-4 border border-slate-700/50 flex flex-col">
+            <h4 class="text-slate-400 text-[10px] font-black uppercase mb-3 tracking-widest">
+              Live Traffic (Last 10 min)
+            </h4>
+            <div class="flex-grow">
+              <canvas
+                baseChart
+                [data]="lineChartData"
+                [options]="chartOptions"
+                [type]="'line'"
+              ></canvas>
             </div>
-          } @empty {
-            <div class="flex flex-col items-center justify-center h-full opacity-20">
-              <span class="text-2xl">📡</span>
-              <p class="text-[10px] uppercase font-bold mt-2">No Signals</p>
+          </div>
+          <div class="bg-slate-800/40 rounded-2xl p-4 border border-slate-700/50 flex flex-col">
+            <h4 class="text-indigo-400 text-[10px] font-black uppercase mb-3 tracking-widest">
+              Top Active Areas
+            </h4>
+            <div class="flex-grow">
+              <canvas
+                baseChart
+                [data]="barChartData"
+                [options]="chartOptions"
+                [type]="'bar'"
+              ></canvas>
+            </div>
+          </div>
+          <div
+            class="bg-slate-800/40 rounded-2xl p-4 border border-slate-700/50 flex flex-col overflow-hidden"
+          >
+            <h4 class="text-pink-400 text-[10px] font-black uppercase mb-3 tracking-widest">
+              Signal Log
+            </h4>
+            <div class="flex-grow overflow-y-auto pr-2 custom-scrollbar space-y-2">
+              @for (event of events.slice(0, 10); track event.id) {
+                <div
+                  class="flex items-center justify-between p-2 rounded-xl bg-white/5 border border-white/5 group hover:bg-white/10"
+                >
+                  <div class="flex flex-col min-w-0">
+                    <span class="text-[11px] font-bold text-slate-100 truncate"
+                      >{{ event.user.name }} {{ event.user.surname }}</span
+                    >
+                    <span class="text-[9px] text-slate-500">{{ event.fence.name }}</span>
+                  </div>
+                  <div class="flex flex-col items-end shrink-0">
+                    <span
+                      [class]="event.type === 'entry' ? 'text-emerald-400' : 'text-amber-400'"
+                      class="text-[10px] font-black uppercase"
+                    >
+                      {{ event.type }}
+                    </span>
+                    <span class="text-[10px] text-slate-500 font-mono">{{
+                      event.timestamp | date: 'HH:mm'
+                    }}</span>
+                  </div>
+                </div>
+              } @empty {
+                <div class="flex flex-col items-center justify-center h-full opacity-20">
+                  <p class="text-[10px] uppercase font-bold mt-2">No Signals</p>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      }
+      @if (viewMode === 'ANALYSIS') {
+        <div class="p-6 h-full overflow-y-auto custom-scrollbar">
+          @if (isAnalyzing) {
+            <div class="flex flex-col items-center justify-center h-full gap-4 opacity-50">
+              <div class="relative">
+                <div class="w-12 h-12 border-2 border-slate-700 rounded-full"></div>
+                <div
+                  class="w-12 h-12 border-2 border-indigo-500 rounded-full border-t-transparent animate-spin absolute top-0 left-0"
+                ></div>
+              </div>
+              <p class="text-[10px] text-indigo-400 font-black uppercase tracking-[0.2em]">
+                Running K-Means Clustering...
+              </p>
+            </div>
+          } @else {
+            <div class="grid grid-cols-3 gap-4">
+              @for (item of analysisResults; track item.fenceId) {
+                <div
+                  class="bg-slate-800/40 rounded-2xl p-5 border border-slate-700/50 hover:border-slate-600"
+                >
+                  <div class="flex justify-between items-start mb-6">
+                    <div>
+                      <h3 class="text-white font-bold text-sm tracking-wide">{{ item.name }}</h3>
+                      <span class="text-[9px] text-slate-500 font-mono uppercase"
+                        >ID: {{ item.fenceId.split('-')[0] }}</span
+                      >
+                    </div>
+                    <span
+                      class="text-[9px] font-black px-2 py-1 rounded border uppercase tracking-wider {{
+                        getCategoryColor(item.category)
+                      }}"
+                    >
+                      {{ item.category }}
+                    </span>
+                  </div>
+                  <div class="grid grid-cols-2 gap-y-4 gap-x-2">
+                    <div>
+                      <p class="text-[9px] text-slate-500 uppercase font-bold tracking-wider mb-1">
+                        Traffic
+                      </p>
+                      <div class="flex items-baseline gap-1">
+                        <span class="text-white font-mono text-sm font-bold">{{
+                          item.entries
+                        }}</span>
+                        <span class="text-[9px] text-slate-600">Visits</span>
+                      </div>
+                    </div>
+                    <div>
+                      <p class="text-[9px] text-slate-500 uppercase font-bold tracking-wider mb-1">
+                        Avg Dwell
+                      </p>
+                      <div class="flex items-baseline gap-1">
+                        <span class="text-white font-mono text-sm font-bold">{{
+                          item.avgDwellTimeMinutes
+                        }}</span>
+                        <span class="text-[9px] text-slate-600">min</span>
+                      </div>
+                    </div>
+                    <div>
+                      <p class="text-[9px] text-slate-500 uppercase font-bold tracking-wider mb-1">
+                        Conversion
+                      </p>
+                      <span class="text-emerald-400 font-mono text-sm font-bold">{{
+                        item.conversionRate
+                      }}</span>
+                    </div>
+                    <div>
+                      <p class="text-[9px] text-slate-500 uppercase font-bold tracking-wider mb-1">
+                        Bounce Rate
+                      </p>
+                      <span class="text-pink-400 font-mono text-sm font-bold">{{
+                        item.bounceRate
+                      }}</span>
+                    </div>
+                  </div>
+                </div>
+              }
             </div>
           }
         </div>
-      </div>
+      }
     </div>
   }
 </div>

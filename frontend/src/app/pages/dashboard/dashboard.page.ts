@@ -29,7 +29,8 @@ import { AnalyticsComponent } from './components/analytics/analytics.component';
   styleUrl: './dashboard.page.scss',
 })
 export class DashboardPage {
-  @ViewChild(MapComponent) mapComponent!: MapComponent;
+  @ViewChild(MapComponent)
+  public mapComponent!: MapComponent;
 
   public selectedFence?: Geofence;
   public isCreating: boolean = false;
