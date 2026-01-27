@@ -6,3 +6,5 @@ npm-debug.log*
 *.log
 dist/
 build/
+privacy-analysis/*.png
+privacy-analysis/*.csv
