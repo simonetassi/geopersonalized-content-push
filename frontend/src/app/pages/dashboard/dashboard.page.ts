@@ -74,7 +74,7 @@ export class DashboardPage {
     const newFence = {
       name: name,
       geometry: geojson.geometry,
-      metadata: { ...metadata, isActive: true, privacyLevel: 1 },
+      metadata: metadata,
     };
 
     this.geofenceService.addFence(newFence).subscribe({

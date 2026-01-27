@@ -37,14 +37,6 @@
         [class]="{ 'bg-white/10': selectedId === fence.id }"
         class="group relative p-4 rounded-xl bg-slate-800/30 border border-l-4 border-slate-700/50 hover:bg-slate-800/60 transition-all cursor-pointer"
       >
-        @if (fence.metadata['isActive']) {
-          <div class="absolute top-2 right-2 flex h-2 w-2">
-            <span
-              class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"
-            ></span>
-            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-          </div>
-        }
         <div class="flex flex-col gap-1">
           <span class="text-sm font-bold text-slate-100 uppercase tracking-tight">{{
             fence.name
@@ -55,11 +47,6 @@
             >
               {{ fence.metadata['category'] }}
             </span>
-            @if (fence.metadata['privacyLevel'] > 0) {
-              <span class="text-[10px] text-indigo-400"
-                >🛡️ Level {{ fence.metadata['privacyLevel'] }}</span
-              >
-            }
           </div>
         </div>
       </div>

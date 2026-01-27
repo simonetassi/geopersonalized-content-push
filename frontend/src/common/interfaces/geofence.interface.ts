@@ -12,7 +12,5 @@ export interface Geofence {
 export interface GeofenceMetadata {
   color: string;
   category: string;
-  privacyLevel: number;
-  isActive: boolean;
   [key: string]: unknown;
 }
