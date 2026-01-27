@@ -1,3 +1,4 @@
+export * from './clustering-metrics.interface';
 export * from './content-meta.interface';
 export * from './event.interface';
 export * from './geofence.interface';
