@@ -1,8 +1,10 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, inject, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { ChartConfiguration, ChartData } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
-import { Event, EventType } from '@/common/interfaces';
+import { ClusteringMetrics, Event, EventType } from '@/common/interfaces';
+import { AnalyticsService } from '@/common/services/analytics.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-analytics',
@@ -12,8 +14,15 @@ import { Event, EventType } from '@/common/interfaces';
   styleUrl: './analytics.component.scss',
 })
 export class AnalyticsComponent implements OnChanges {
-  @Input() events: Event[] = [];
+  private analyticsService = inject(AnalyticsService);
+
+  @Input()
+  public events: Event[] = [];
+
   public isExpanded: boolean = false;
+  public isAnalyzing = false;
+  public analysisResults: ClusteringMetrics[] = [];
+  public viewMode: 'LIVE' | 'ANALYSIS' = 'LIVE';
 
   public entryCount: number = 0;
   public exitCount: number = 0;
@@ -140,6 +149,36 @@ export class AnalyticsComponent implements OnChanges {
         },
       ],
     };
+  }
+
+  public async runAnalysis(): Promise<void> {
+    this.viewMode = 'ANALYSIS';
+    this.isAnalyzing = true;
+
+    try {
+      this.analysisResults = await firstValueFrom(this.analyticsService.getClusteringData());
+    } catch (error) {
+      console.error('Analysis failed', error);
+    } finally {
+      this.isAnalyzing = false;
+    }
+  }
+
+  public getCategoryColor(category: string): string {
+    switch (category) {
+      case 'HOTSPOT':
+        return 'bg-red-500/20 text-red-400 border-red-500/50';
+      case 'COLD':
+        return 'bg-slate-500/20 text-slate-400 border-slate-500/50';
+      case 'STANDARD':
+        return 'bg-indigo-500/20 text-indigo-400 border-indigo-500/50';
+      default:
+        return 'bg-gray-500/20 text-gray-400';
+    }
+  }
+
+  public switchToLive(): void {
+    this.viewMode = 'LIVE';
   }
 
   private isSameMinute(d1: Date, d2: Date): boolean {
