@@ -48,12 +48,7 @@ export class AnalyticsController {
               },
               properties: {
                 type: 'object',
-                properties: {
-                  weight: {
-                    type: 'number',
-                    description: 'Heatmap intensity',
-                  },
-                },
+                properties: {},
               },
             },
           },

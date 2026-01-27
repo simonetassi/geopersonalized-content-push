@@ -175,12 +175,11 @@ export class MapComponent implements AfterViewInit, OnChanges {
     try {
       const geoJsonData = await firstValueFrom(this.analyticsService.getHeatmapData());
 
-      const collection = geoJsonData as FeatureCollection<Point, { weight: number }>;
+      const collection = geoJsonData as FeatureCollection<Point>;
 
       const heatPoints = collection.features.map((f) => {
         const [lon, lat] = f.geometry.coordinates;
-        const intensity = f.properties.weight || 0.5;
-        return [lat, lon, intensity] as [number, number, number];
+        return [lat, lon, 1] as [number, number, number];
       });
 
       this.heatmapLayer = L.heatLayer(heatPoints, {

@@ -55,7 +55,7 @@ export class AnalyticsService {
       features: rawPoints.map((p) => ({
         type: 'Feature',
         geometry: { type: 'Point', coordinates: [p.lon, p.lat] },
-        properties: { weight: 1 },
+        properties: {},
       })),
     };
   }
