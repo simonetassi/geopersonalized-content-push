@@ -60,7 +60,7 @@ export class MapComponent implements AfterViewInit, OnChanges {
 
   private initMap(): void {
     this.map = L.map('map', {
-      center: [45.4642, 9.19],
+      center: [40.75, -73.99],
       zoom: 12,
       zoomControl: false,
     });
@@ -149,7 +149,21 @@ export class MapComponent implements AfterViewInit, OnChanges {
 
     if (layer && originalFence && 'setStyle' in layer) {
       const originalColor = originalFence.metadata.color;
-      const pulseColor = type === EventType.ENTRY ? '#10b981' : '#f59e0b';
+      let pulseColor: string;
+
+      switch (type) {
+        case EventType.ENTRY:
+          pulseColor = '#10b981';
+          break;
+        case EventType.EXIT:
+          pulseColor = '#ef4444';
+          break;
+        case EventType.CONTENT_VIEW:
+          pulseColor = '#3b82f6';
+          break;
+        default:
+          pulseColor = '#f59e0b';
+      }
 
       layer.setStyle({
         fillOpacity: 0.8,
