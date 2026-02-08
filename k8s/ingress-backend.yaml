@@ -1,0 +1,55 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: api-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  rules:
+  - host: geo-jazz.local
+    http:
+      paths:
+      - path: /api(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: backend-service
+            port:
+              number: 80
+      - path: /fences/village-vanguard(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: service-village-vanguard
+            port:
+              number: 80
+      - path: /fences/blue-note(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: service-blue-note
+            port:
+              number: 80
+      - path: /fences/birdland(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: service-birdland
+            port:
+              number: 80
+      - path: /fences/central-park(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: service-central-park
+            port:
+              number: 80
+      - path: /fences/lincoln-center(/|$)(.*)
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: service-lincoln-center
+            port:
+              number: 80
