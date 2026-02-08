@@ -78,9 +78,7 @@ export class DashboardPage {
     };
 
     this.geofenceService.addFence(newFence).subscribe({
-      next: (created) => {
-        console.log('Geofence created correctly:', created);
-
+      next: () => {
         if (this.tempLayer) this.tempLayer.remove();
 
         this.closeCreation();
@@ -97,8 +95,7 @@ export class DashboardPage {
     }
 
     this.geofenceService.updateFence(updated).subscribe({
-      next: (saved) => {
-        console.log('Updated:', saved);
+      next: () => {
         this.selectedFence = undefined;
         this.isMapEditing = false;
       },
