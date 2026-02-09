@@ -12,7 +12,6 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import * as L from 'leaflet';
-import 'leaflet.heat';
 import '@geoman-io/leaflet-geoman-free';
 import { FeatureCollection, Geometry, Point } from 'geojson';
 import { firstValueFrom } from 'rxjs';
@@ -185,6 +184,13 @@ export class MapComponent implements AfterViewInit, OnChanges {
 
   private async loadHeatmapLayer(): Promise<void> {
     if (!this.map) return;
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    if (!(L as any).heatLayer) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      (window as any).L = L;
+      await import('leaflet.heat');
+    }
 
     try {
       const geoJsonData = await firstValueFrom(this.analyticsService.getHeatmapData());
