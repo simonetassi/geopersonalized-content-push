@@ -36,6 +36,7 @@
       @if (viewMode === 'LIVE') {
         <div class="hidden md:flex gap-4 text-[10px] font-bold uppercase tracking-widest">
           <span class="text-emerald-400">In: {{ entryCount }}</span>
+          <span class="text-blue-400">Views: {{ contentViewCount }}</span>
           <span class="text-amber-400">Out: {{ exitCount }}</span>
         </div>
       }
@@ -97,10 +98,12 @@
                   </div>
                   <div class="flex flex-col items-end shrink-0">
                     <span
-                      [class]="event.type === 'entry' ? 'text-emerald-400' : 'text-amber-400'"
+                      [class.text-emerald-400]="event.type === 'entry'"
+                      [class.text-blue-400]="event.type === 'content_view'"
+                      [class.text-amber-400]="event.type === 'exit'"
                       class="text-[10px] font-black uppercase"
                     >
-                      {{ event.type }}
+                      {{ event.type.replace('_', ' ') }}
                     </span>
                     <span class="text-[10px] text-slate-500 font-mono">{{
                       event.timestamp | date: 'HH:mm'

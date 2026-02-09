@@ -31,7 +31,6 @@ export class GeofencesService {
   public load(): void {
     this.http.get<Geofence[]>(this.baseUrl).subscribe((data) => {
       this.fences$.next(data);
-      console.log(data);
     });
   }
 

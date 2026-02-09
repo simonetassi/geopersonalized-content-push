@@ -26,6 +26,7 @@ export class AnalyticsComponent implements OnChanges {
 
   public entryCount: number = 0;
   public exitCount: number = 0;
+  public contentViewCount: number = 0;
 
   public lineChartData: ChartData<'line'> = {
     labels: [],
@@ -44,6 +45,15 @@ export class AnalyticsComponent implements OnChanges {
         label: 'Exits',
         borderColor: '#f59e0b',
         backgroundColor: 'rgba(245, 158, 11, 0.1)',
+        fill: true,
+        tension: 0.4,
+        pointRadius: 2,
+      },
+      {
+        data: [],
+        label: 'Views',
+        borderColor: '#3b82f6',
+        backgroundColor: 'rgba(59, 130, 246, 0.1)',
         fill: true,
         tension: 0.4,
         pointRadius: 2,
@@ -85,6 +95,7 @@ export class AnalyticsComponent implements OnChanges {
   private updateCounters(): void {
     this.entryCount = this.events.filter((e) => e.type === EventType.ENTRY).length;
     this.exitCount = this.events.filter((e) => e.type === EventType.EXIT).length;
+    this.contentViewCount = this.events.filter((e) => e.type === EventType.CONTENT_VIEW).length;
   }
 
   private updateLineChart(): void {
@@ -92,20 +103,18 @@ export class AnalyticsComponent implements OnChanges {
     const labels: string[] = [];
     const entries: number[] = [];
     const exits: number[] = [];
+    const views: number[] = [];
 
     for (let i = 9; i >= 0; i--) {
       const time = new Date(now.getTime() - i * 60000);
       labels.push(time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
 
-      entries.push(
-        this.events.filter(
-          (e) => e.type === EventType.ENTRY && this.isSameMinute(new Date(e.timestamp), time),
-        ).length,
-      );
-      exits.push(
-        this.events.filter(
-          (e) => e.type === EventType.EXIT && this.isSameMinute(new Date(e.timestamp), time),
-        ).length,
+      const inThisMinute = (e: Event) => this.isSameMinute(new Date(e.timestamp), time);
+
+      entries.push(this.events.filter((e) => e.type === EventType.ENTRY && inThisMinute(e)).length);
+      exits.push(this.events.filter((e) => e.type === EventType.EXIT && inThisMinute(e)).length);
+      views.push(
+        this.events.filter((e) => e.type === EventType.CONTENT_VIEW && inThisMinute(e)).length,
       );
     }
 
@@ -114,6 +123,7 @@ export class AnalyticsComponent implements OnChanges {
       datasets: [
         { ...this.lineChartData.datasets[0], data: entries },
         { ...this.lineChartData.datasets[1], data: exits },
+        { ...this.lineChartData.datasets[2], data: views },
       ],
     };
   }

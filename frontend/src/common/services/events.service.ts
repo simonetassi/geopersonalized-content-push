@@ -28,7 +28,7 @@ export class EventsService implements OnDestroy {
   );
 
   constructor() {
-    this.socket = io(environment.apiUrl, { transports: ['websocket'] });
+    this.socket = io(environment.socketUrl, { transports: ['websocket'] });
 
     this.setupWebsocket();
     this.loadHistory();
