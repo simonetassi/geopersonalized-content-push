@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: repo-blue-note
+spec:
+  serviceName: "service-blue-note"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: content-repo
+      club: blue-note
+  template:
+    metadata:
+      labels:
+        app: content-repo
+        club: blue-note
+    spec:
+      containers:
+      - name: content-repo
+        image: geo-app/content-repo:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 3000
+        volumeMounts:
+        - name: storage
+          mountPath: /app/storage
+  volumeClaimTemplates:
+  - metadata:
+      name: storage
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-blue-note
+spec:
+  ports:
+  - port: 80
+    targetPort: 3000
+  selector:
+    club: blue-note
