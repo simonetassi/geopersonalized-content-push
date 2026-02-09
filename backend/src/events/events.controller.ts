@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, Delete } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { CreateEventDTO, EventDTO, FindEventsDTO } from './dto';
 import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
@@ -19,5 +19,12 @@ export class EventsController {
   @ApiOkResponse({ type: [EventDTO] })
   findAll(@Query() query: FindEventsDTO) {
     return this.eventsService.findAll(query);
+  }
+
+  @Delete()
+  @ApiOperation({ operationId: 'wipe' })
+  @ApiOkResponse()
+  public wipe(): Promise<void> {
+    return this.eventsService.wipe();
   }
 }

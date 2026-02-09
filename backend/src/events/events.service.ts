@@ -68,4 +68,8 @@ export class EventsService {
       },
     });
   }
+
+  public async wipe(): Promise<void> {
+    await this.eventRepository.clear();
+  }
 }
