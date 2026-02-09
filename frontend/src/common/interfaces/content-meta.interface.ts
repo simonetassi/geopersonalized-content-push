@@ -7,6 +7,7 @@ export enum ContentType {
   HTML = 'HTML',
   JSON = 'JSON',
   PDF = 'PDF',
+  AUDIO = 'AUDIO',
 }
 
 export interface ContentMeta {
