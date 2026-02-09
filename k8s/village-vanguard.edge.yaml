@@ -8,12 +8,12 @@ spec:
   selector:
     matchLabels:
       app: content-repo
-      club: village-vanguard
+      venue_name: village-vanguard
   template:
     metadata:
       labels:
         app: content-repo
-        club: village-vanguard
+        venue_name: village-vanguard
     spec:
       containers:
       - name: content-repo
@@ -42,4 +42,4 @@ spec:
   - port: 80
     targetPort: 3000
   selector:
-    club: village-vanguard
+    venue_name: village-vanguard

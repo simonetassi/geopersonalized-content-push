@@ -8,12 +8,12 @@ spec:
   selector:
     matchLabels:
       app: content-repo
-      club: birdland
+      venue_name: birdland
   template:
     metadata:
       labels:
         app: content-repo
-        club: birdland
+        venue_name: birdland
     spec:
       containers:
       - name: content-repo
@@ -42,4 +42,4 @@ spec:
   - port: 80
     targetPort: 3000
   selector:
-    club: birdland
+    venue_name: birdland

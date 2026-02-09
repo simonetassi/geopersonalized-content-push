@@ -8,12 +8,12 @@ spec:
   selector:
     matchLabels:
       app: content-repo
-      club: blue-note
+      venue_name: blue-note
   template:
     metadata:
       labels:
         app: content-repo
-        club: blue-note
+        venue_name: blue-note
     spec:
       containers:
       - name: content-repo
@@ -42,4 +42,4 @@ spec:
   - port: 80
     targetPort: 3000
   selector:
-    club: blue-note
+    venue_name: blue-note

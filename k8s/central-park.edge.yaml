@@ -7,11 +7,13 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: repo-central-park
+      app: content-repo
+      venue_name: central-park
   template:
     metadata:
       labels:
-        app: repo-central-park
+        app: content-repo
+        venue_name: central-park
     spec:
       containers:
       - name: content-repo
@@ -21,7 +23,7 @@ spec:
         - containerPort: 3000
         volumeMounts:
         - name: data
-          mountPath: /app/uploads
+          mountPath: /app/storage
   volumeClaimTemplates:
   - metadata:
       name: data
@@ -40,4 +42,4 @@ spec:
   - port: 80
     targetPort: 3000
   selector:
-    app: repo-central-park
+    venue_name: central-park
