@@ -3,9 +3,10 @@ import { GeofenceService } from './geofence.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Geofence } from './entities/geofence.entity';
 import { GeofenceController } from './geofence.controller';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Geofence])],
+  imports: [TypeOrmModule.forFeature([Geofence]), HttpModule],
   providers: [GeofenceService],
   controllers: [GeofenceController],
   exports: [GeofenceService],

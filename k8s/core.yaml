@@ -87,6 +87,8 @@ spec:
           value: "geocontent"
         - name: PORT
           value: "3000"
+        - name: INTERNAL_REPO_PREFIX
+          value: "http://service-"
 ---
 apiVersion: v1
 kind: Service

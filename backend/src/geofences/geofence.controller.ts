@@ -32,6 +32,13 @@ export class GeofenceController {
     return this.geofenceService.findAll();
   }
 
+  @Get('active')
+  @ApiOperation({ operationId: 'getActive' })
+  @ApiOkResponse({ type: [GeofenceDTO] })
+  public async findAllActive(): Promise<GeofenceDTO[]> {
+    return this.geofenceService.findAllActive();
+  }
+
   @Get(':id')
   @ApiOperation({ operationId: 'retrieve' })
   @ApiOkResponse({ type: GeofenceDTO })
