@@ -18,35 +18,35 @@ spec:
             name: backend-service
             port:
               number: 80
-      - path: /fences/village-vanguard(/|$)(.*)
+      - path: /repos/village-vanguard(/|$)(.*)
         pathType: ImplementationSpecific
         backend:
           service:
             name: service-village-vanguard
             port:
               number: 80
-      - path: /fences/blue-note(/|$)(.*)
+      - path: /repos/blue-note(/|$)(.*)
         pathType: ImplementationSpecific
         backend:
           service:
             name: service-blue-note
             port:
               number: 80
-      - path: /fences/birdland(/|$)(.*)
+      - path: /repos/birdland(/|$)(.*)
         pathType: ImplementationSpecific
         backend:
           service:
             name: service-birdland
             port:
               number: 80
-      - path: /fences/central-park(/|$)(.*)
+      - path: /repos/central-park(/|$)(.*)
         pathType: ImplementationSpecific
         backend:
           service:
             name: service-central-park
             port:
               number: 80
-      - path: /fences/lincoln-center(/|$)(.*)
+      - path: /repos/lincoln-center(/|$)(.*)
         pathType: ImplementationSpecific
         backend:
           service:
