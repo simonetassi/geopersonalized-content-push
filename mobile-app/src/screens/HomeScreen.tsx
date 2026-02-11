@@ -173,18 +173,14 @@ export default function HomeScreen(): JSX.Element {
             </Text>
           </View>
         </View>
-
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.primaryButton}>
-            <Text style={styles.primaryButtonText}>Open Map</Text>
-          </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
               navigation.navigate('History');
             }}
-            style={styles.secondaryButton}
+            style={styles.primaryButton}
           >
-            <Text style={styles.secondaryButtonText}>View History</Text>
+            <Text style={styles.primaryButtonText}>View History</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.infoBlock}>
@@ -356,17 +352,6 @@ const styles = StyleSheet.create({
   },
   primaryButtonText: {
     color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  secondaryButton: {
-    backgroundColor: '#f0f0f0',
-    paddingVertical: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
-  secondaryButtonText: {
-    color: '#000',
     fontSize: 16,
     fontWeight: '600',
   },
