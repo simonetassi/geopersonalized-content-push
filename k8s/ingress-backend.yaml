@@ -7,9 +7,9 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-body-size: "50m"
     nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
+  ingressClassName: nginx
   rules:
-  - host: geo-jazz.local
-    http:
+  - http:
       paths:
       - path: /api(/|$)(.*)
         pathType: ImplementationSpecific

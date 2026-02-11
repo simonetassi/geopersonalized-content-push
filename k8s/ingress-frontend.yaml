@@ -3,9 +3,9 @@ kind: Ingress
 metadata:
   name: frontend-ingress
 spec:
+  ingressClassName: nginx
   rules:
-  - host: geo-jazz.local
-    http:
+  - http:
       paths:
       - path: /
         pathType: Prefix

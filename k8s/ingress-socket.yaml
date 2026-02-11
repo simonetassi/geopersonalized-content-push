@@ -7,9 +7,9 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
     nginx.ingress.kubernetes.io/websocket-services: "backend-service"
 spec:
+  ingressClassName: nginx
   rules:
-  - host: geo-jazz.local
-    http:
+  - http:
       paths:
       - path: /socket.io(/|$)(.*)
         pathType: ImplementationSpecific
