@@ -30,6 +30,7 @@ interface FenceStats {
   views: number;
   totalDwellTimeMs: number;
   dwellCount: number;
+  completedSessions: number;
 }
 
 interface CategoryMap {
@@ -77,10 +78,14 @@ export class AnalyticsService {
         views: 0,
         totalDwellTimeMs: 0,
         dwellCount: 0,
+        completedSessions: 0,
       });
     });
 
-    const activeSessions = new Map<string, { fenceId: string; time: number }>();
+    const activeSessions = new Map<
+      string,
+      { fenceId: string; time: number; hasViewed: boolean }
+    >();
 
     for (const event of allEvents) {
       const stats = event.fence ? statsMap.get(event.fence.id) : undefined;
@@ -92,9 +97,18 @@ export class AnalyticsService {
 
         if (event.type === EventType.ENTRY) {
           stats.entries++;
-          activeSessions.set(userId, { fenceId, time: eventTime });
+          activeSessions.set(userId, {
+            fenceId,
+            time: eventTime,
+            hasViewed: false,
+          });
         } else if (event.type === EventType.CONTENT_VIEW) {
-          stats.views++;
+          const session = activeSessions.get(userId);
+
+          if (session && session.fenceId === fenceId && !session.hasViewed) {
+            stats.views++;
+            session.hasViewed = true;
+          }
         } else if (event.type === EventType.EXIT) {
           stats.exits++;
 
@@ -107,6 +121,8 @@ export class AnalyticsService {
               stats.totalDwellTimeMs += duration;
               stats.dwellCount++;
             }
+
+            stats.completedSessions++;
             activeSessions.delete(userId);
           }
         }
@@ -120,11 +136,15 @@ export class AnalyticsService {
       stats.dwellCount > 0
         ? stats.totalDwellTimeMs / stats.dwellCount / 1000
         : 0;
+
+    const sessionBase =
+      stats.completedSessions > 0 ? stats.completedSessions : stats.entries;
+
     const conversion =
-      stats.entries > 0 ? (stats.views / stats.entries) * 100 : 0;
+      sessionBase > 0 ? Math.min((stats.views / sessionBase) * 100, 100) : 0;
     const bounce =
-      stats.entries > 0
-        ? ((stats.entries - stats.views) / stats.entries) * 100
+      sessionBase > 0
+        ? Math.max(((sessionBase - stats.views) / sessionBase) * 100, 0)
         : 0;
 
     return {
