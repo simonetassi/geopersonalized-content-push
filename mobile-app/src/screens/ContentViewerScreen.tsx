@@ -1,4 +1,4 @@
-import React, { JSX } from 'react';
+import React, { JSX, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -13,6 +13,11 @@ import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { ContentMeta, ContentType } from '@/interfaces';
 import { useContentStore } from '@/store/useContentStore';
 import { openFileViewer } from '@/utils/fileHandler';
+import { useAuthStore } from '@/store/useAuthStore';
+import { createEvent } from '@/api/Events';
+import { useGeofenceStore } from '@/store/useGeofenceStore';
+
+import * as Location from 'expo-location';
 
 type ParamList = {
   ContentViewer: { content: ContentMeta };
@@ -27,6 +32,36 @@ export default function ContentViewerScreen(): JSX.Element {
   const isDownloading = useContentStore(state => state.loadingItems[content.id]);
   const downloadContent = useContentStore(state => state.downloadContent);
   const deleteContent = useContentStore(state => state.deleteContent);
+
+  const user = useAuthStore(state => state.user);
+  const activeFenceId = useGeofenceStore(state => state.activeGeofenceId);
+
+  const logContentView = async () => {
+    if (!user || !activeFenceId) return;
+
+    try {
+      const location = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.High,
+      });
+
+      await createEvent({
+        type: 'content_view',
+        userId: user.id,
+        fenceId: activeFenceId,
+        timestamp: new Date().toISOString(),
+        location: {
+          type: 'Point',
+          coordinates: [location.coords.longitude, location.coords.latitude],
+        },
+      });
+    } catch (error) {
+      console.error('Failed to log content view event:', error);
+    }
+  };
+
+  useEffect(() => {
+    void logContentView();
+  }, [content.id]);
 
   const handleDownload = async (): Promise<void> => {
     const uri = await downloadContent(content);

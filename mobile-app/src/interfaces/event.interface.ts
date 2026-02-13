@@ -3,7 +3,7 @@ import { Geofence } from './geofence.interface';
 import { User } from './user.interface';
 
 export interface EventPayload {
-  type: 'entry' | 'exit';
+  type: 'entry' | 'exit' | 'content_view';
   userId: string;
   fenceId: string;
   location: Point;
@@ -12,7 +12,7 @@ export interface EventPayload {
 
 export interface Event {
   id: string;
-  type: 'entry' | 'exit';
+  type: 'entry' | 'exit' | 'content_view';
   user: User;
   fence: Geofence;
   location: Point;
