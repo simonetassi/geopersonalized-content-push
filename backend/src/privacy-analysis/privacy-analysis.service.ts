@@ -3,10 +3,16 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PrivacyAnalysisLog } from './entities/privacy-analysis-log.entity';
 import { Geofence } from '@/geofences/entities/geofence.entity';
-import { LatLonCoordinates } from '@/common/interfaces/lat-lon-coordinates.inteface';
 
 interface DistanceResult {
   meters: number;
+}
+
+interface BoundingBoxResult {
+  min_lon: string | number;
+  max_lon: string | number;
+  min_lat: string | number;
+  max_lat: string | number;
 }
 
 interface SimulationResult {
@@ -45,21 +51,29 @@ export class PrivacyAnalysisService {
     const fence = await this.fenceRepository.findOneBy({ id: fenceId });
     if (!fence) throw new NotFoundException('Fence not found');
 
-    const centerRes: LatLonCoordinates[] = await this.fenceRepository.query(
-      `SELECT ST_X(ST_Centroid(geometry)) as lon, ST_Y(ST_Centroid(geometry)) as lat FROM geofence WHERE id = $1`,
+    const boundsRes = await this.fenceRepository.query<BoundingBoxResult[]>(
+      `SELECT 
+         ST_XMin(geometry) as min_lon, 
+         ST_XMax(geometry) as max_lon, 
+         ST_YMin(geometry) as min_lat, 
+         ST_YMax(geometry) as max_lat 
+       FROM geofence WHERE id = $1`,
       [fenceId],
     );
 
-    const center = {
-      lat: Number(centerRes[0].lat),
-      lon: Number(centerRes[0].lon),
-    };
+    const GRID_SIZE = 0.001;
+    const BUFFER = GRID_SIZE * 2;
+
+    const minLon = Number(boundsRes[0].min_lon) - BUFFER;
+    const maxLon = Number(boundsRes[0].max_lon) + BUFFER;
+    const minLat = Number(boundsRes[0].min_lat) - BUFFER;
+    const maxLat = Number(boundsRes[0].max_lat) + BUFFER;
 
     const logs: PrivacyAnalysisLog[] = [];
 
     for (let i = 0; i < iterations; i++) {
-      const realLat = center.lat + (Math.random() - 0.5) * 0.01;
-      const realLon = center.lon + (Math.random() - 0.5) * 0.01;
+      const realLon = minLon + Math.random() * (maxLon - minLon);
+      const realLat = minLat + Math.random() * (maxLat - minLat);
 
       const { pLat, pLon } = this.applyCloaking(realLat, realLon);
 
