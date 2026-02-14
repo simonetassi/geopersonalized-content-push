@@ -133,4 +133,8 @@ export class PrivacyAnalysisService {
 
     return csv;
   }
+
+  public async wipe(): Promise<void> {
+    await this.logsRepository.clear();
+  }
 }

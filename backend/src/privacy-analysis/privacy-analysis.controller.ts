@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Param, Res } from '@nestjs/common';
+import { Controller, Post, Get, Param, Res, Delete } from '@nestjs/common';
 import { PrivacyAnalysisService } from './privacy-analysis.service';
 import { Response } from 'express';
 import { ApiOperation } from '@nestjs/swagger';
@@ -25,5 +25,11 @@ export class PrivacyAnalysisController {
     res.header('Content-Type', 'text/csv');
     res.attachment('privacy_experiment_data.csv');
     return res.send(csv);
+  }
+
+  @Delete()
+  @ApiOperation({ operationId: 'wipe' })
+  public wipe(): Promise<void> {
+    return this.service.wipe();
   }
 }
