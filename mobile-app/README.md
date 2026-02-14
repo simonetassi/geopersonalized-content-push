@@ -1,50 +1,30 @@
-# Welcome to your Expo app 👋
+# Mobile Application
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+## Description
 
-## Get started
+A cross-platform mobile application that acts as the primary interface for the end-user. It handles efficient background location monitoring and delivers content when users enter defined zones.
 
-1. Install dependencies
+## Technical Stack
 
-   ```bash
-   npm install
-   ```
+- **Framework:** React Native (Expo)
+- **State Management:** Zustand
+- **Geospatial Engine:** Turf.js and Geolib
 
-2. Start the app
+## Key Functionalities
 
-   ```bash
-   npx expo start
-   ```
+- **Dual-Stage Geofencing:** Utilizes a circular buffer for low-power proximity detection and switches to high-precision polygon checks for exact entry/exit events.
+- **Offline Support:** Automatically prefetches content metadata and caches assets locally when entering a geofence's influence zone.
+- **User Privacy:** Features a "Location Cloaking" toggle that snaps user coordinates to a grid before transmission to the backend, preserving anonymity.
+- **Content Viewer:** Integrated viewer for consuming PDF, Image, and Video content directly within the app.
+- **Event History:** Local storage and visualization of the user's past geofence interactions.
 
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## Setup
 
 ```bash
-npm run reset-project
+# Install dependencies
+npm install
+
+# Run on Android/iOS
+npx expo run:android
+npx expo run:ios
 ```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
