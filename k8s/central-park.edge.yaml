@@ -15,6 +15,20 @@ spec:
         app: content-repo
         venue_name: central-park
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: area
+                operator: In
+                values:
+                - central-park
+      tolerations:
+      - key: "dedicated"
+        operator: "Equal"
+        value: "edge-node"
+        effect: "NoSchedule"
       containers:
       - name: content-repo
         image: geo-app/content-repo:latest
