@@ -3,7 +3,7 @@ import { useAuthStore } from '@/store/useAuthStore';
 import { useHistoryStore } from '@/store/useHistoryStore';
 import { Text } from '@react-navigation/elements';
 import { useNavigation } from 'expo-router';
-import { JSX, useCallback, useEffect } from 'react';
+import { JSX, useCallback, useEffect, useMemo } from 'react';
 import { FlatList, RefreshControl, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -51,6 +51,10 @@ export default function HistoryScreen(): JSX.Element {
   const user = useAuthStore(state => state.user);
   const { history, isLoading, fetchHistory } = useHistoryStore();
 
+  const movementHistory = useMemo(() => {
+    return history.filter(event => event.type === 'entry' || event.type === 'exit');
+  }, [history]);
+
   useEffect(() => {
     if (user?.id) {
       void fetchHistory(user.id);
@@ -72,7 +76,7 @@ export default function HistoryScreen(): JSX.Element {
         <Text style={styles.title}>History</Text>
       </View>
       <FlatList
-        data={history}
+        data={movementHistory}
         keyExtractor={item => item.id}
         renderItem={({ item }) => <HistoryItem item={item} />}
         contentContainerStyle={styles.listContent}
@@ -124,7 +128,6 @@ const styles = StyleSheet.create({
   listContent: {
     padding: 20,
   },
-  // Card Styles
   card: {
     backgroundColor: '#F9F9F9',
     borderRadius: 12,
@@ -166,12 +169,12 @@ const styles = StyleSheet.create({
   },
   fenceId: {
     fontSize: 10,
-    fontFamily: 'monospace', // Monospaced font for IDs
+    fontFamily: 'monospace',
     color: '#AAA',
     marginBottom: 12,
   },
   repoButton: {
-    backgroundColor: '#007AFF', // Standard Blue
+    backgroundColor: '#007AFF',
     paddingVertical: 10,
     borderRadius: 8,
     alignItems: 'center',
