@@ -77,6 +77,7 @@ export class PrivacyAnalysisService {
 
       const { pLat, pLon } = this.applyCloaking(realLat, realLon);
 
+      // ::geography casts to meters instead of degrees
       const distRes: DistanceResult[] = await this.fenceRepository.query(
         `SELECT ST_Distance(
            ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography,
